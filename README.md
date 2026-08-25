@@ -73,6 +73,33 @@ in whole days and labels the row, rather than inventing a precision the CFP neve
 `notAnnounced` lists venues with no published dates. They appear at the bottom with no
 countdown. Move one up into `conferences` once its CFP appears.
 
+Each may carry an optional `lastCycle` block — the previous cycle's **actual** dates,
+shown as reference:
+
+```json
+{
+  "name": "ISCA 2027",
+  "note": "No official site; every 2027 URL 404s.",
+  "watch": "https://iscaconf.org/isca2027/",
+  "lastCycle": {
+    "edition": "ISCA 2026 (53rd)",
+    "dates": [
+      { "label": "Full paper", "date": "2025-11-17", "note": "11:59 PM AoE" }
+    ]
+  }
+}
+```
+
+These render as plain text with **no countdown attached**, and are labelled as what
+last cycle *actually ran* — never as a prediction for this one.
+
+That distinction is the entire point. While this repo was being built, an aggregator
+was publishing a full ISCA 2027 schedule — abstract 10 Nov, paper 17 Nov, notification
+27 Mar, plus a "second submission round" on 5 and 12 Dec. Every one of those is an
+ISCA 2026 date shifted forward exactly one year, and the "second round" is really
+ISCA's separate Industry Track. It looked authoritative and was entirely invented.
+Last year's date is useful; last year's date wearing this year's label is not.
+
 ## Local preview
 
 `index.html` reads `data.json` over `fetch`, which browsers block for pages opened

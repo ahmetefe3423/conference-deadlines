@@ -103,6 +103,10 @@ h2{font-family:Archivo,system-ui,sans-serif;font-weight:600;font-size:10.5px;let
 .tba .r+.r{border-top:1px solid var(--rule);}
 .tba .nm{font-family:Archivo,system-ui,sans-serif;font-weight:600;font-size:13px;}
 .tba .wy{color:var(--ink-3);}
+.tba .last{margin-top:5px;font-size:10.5px;color:var(--ink-3);}
+.tba .last b{font-weight:600;color:var(--ink-2);letter-spacing:.06em;
+  text-transform:uppercase;font-size:9px;}
+.tba .last span{white-space:nowrap;}
 
 .foot{margin-top:30px;padding-top:11px;border-top:1px solid var(--rule);
   font-size:10.5px;color:var(--ink-3);line-height:1.65;}
@@ -182,6 +186,19 @@ function validate(cfg){
   if (!Array.isArray(cfg.conferences)) e.push("Missing <code>conferences</code> array.");
   if (cfg.notAnnounced !== undefined && !Array.isArray(cfg.notAnnounced))
     e.push("<code>notAnnounced</code> must be an array.");
+
+  (cfg.notAnnounced || []).forEach((t,i)=>{
+    const who = "notAnnounced " + (i+1) + " (" + esc(t.name || "no name") + ")";
+    if (!t.name) e.push(who + ": missing <code>name</code>");
+    if (t.lastCycle){
+      if (!Array.isArray(t.lastCycle.dates))
+        e.push(who + ": <code>lastCycle.dates</code> must be an array");
+      else t.lastCycle.dates.forEach(d=>{
+        if (!/^\d{4}-\d{2}-\d{2}$/.test(d.date || ""))
+          e.push(who + ": lastCycle date must be YYYY-MM-DD, got " + esc(JSON.stringify(d.date)));
+      });
+    }
+  });
 
   (cfg.conferences || []).forEach((c,i)=>{
     const who = "Conference " + (i+1) + " (" + esc(c.name || "no name") + " " + esc(c.year || "") + ")";
@@ -299,8 +316,20 @@ function run(cfg){
 
     const tba = cfg.notAnnounced || [];
     el("tba-h").style.display = tba.length ? "" : "none";
-    el("tba").innerHTML = tba.map(t=>'<div class="r"><div class="nm">'+esc(t.name)
-      + '</div><div class="wy">'+esc(t.note)+'</div></div>').join("");
+    el("tba").innerHTML = tba.map(t=>{
+      // Last cycle's ACTUAL dates, shown as reference. Never a prediction and
+      // never a countdown — an aggregator publishing last year's dates shifted
+      // forward by one is exactly what this page exists not to do.
+      const prior = t.lastCycle && Array.isArray(t.lastCycle.dates)
+        ? '<div class="last"><b>' + esc(t.lastCycle.edition || "last cycle") + ' actually ran</b><br>'
+          + t.lastCycle.dates.map(d=>'<span>' + esc(d.label) + ' '
+              + fmt("UTC",SHORT).format(noon(d.date))
+              + (d.note ? ' (' + esc(d.note) + ')' : '') + '</span>').join(' &nbsp;·&nbsp; ')
+          + '</div>'
+        : '';
+      return '<div class="r"><div class="nm">'+esc(t.name)+'</div>'
+           + '<div><div class="wy">'+esc(t.note)+'</div>'+prior+'</div></div>';
+    }).join("");
   }
 
   function tick(){

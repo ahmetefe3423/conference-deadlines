@@ -237,23 +237,127 @@
   "notAnnounced": [
     {
       "name": "DAC 2027",
-      "note": "Conference 11-14 Jul 2027, San Jose. Call for papers returns HTTP 401 - not public yet. DAC uses 5 PM US Pacific, not AoE: when adding it, set \"time\": \"17:00\" and \"timezone\": \"PDT\".",
-      "watch": "https://dac.com/2027/authors/call-for-contributions"
+      "note": "Conference 11-14 Jul 2027, San Jose. Research call for papers returns HTTP 401 - not public yet. DAC uses 5 PM US Pacific, not AoE: set \"time\": \"17:00\" and \"timezone\": \"PST\". DAC runs no rebuttal phase. Last cycle the submission site opened 30 Sep, about six weeks before the abstract deadline, so the 2027 call should surface around late Sep 2026.",
+      "watch": "https://dac.com/2027/authors/call-for-contributions",
+      "lastCycle": {
+        "edition": "DAC 2026 (63rd)",
+        "dates": [
+          {
+            "label": "Abstract",
+            "date": "2025-11-11",
+            "note": "5 PM PST"
+          },
+          {
+            "label": "Full paper",
+            "date": "2025-11-19",
+            "note": "5 PM PST, extended from 18 Nov"
+          },
+          {
+            "label": "Decision",
+            "date": "2026-03-09"
+          },
+          {
+            "label": "Camera-ready",
+            "date": "2026-04-14"
+          }
+        ]
+      }
     },
     {
       "name": "ISCA 2027",
-      "note": "No official site; every 2027 URL 404s. Aggregator listings are ISCA 2026 shifted a year - withheld.",
-      "watch": "https://iscaconf.org/isca2027/"
+      "note": "No official site; every 2027 URL 404s. Aggregators list ISCA 2027 dates that are exactly the 2026 dates below shifted one year, plus a \"second round\" that is really the Industry Track (abstract 5 Dec, paper 12 Dec 2025). Withheld.",
+      "watch": "https://iscaconf.org/isca2027/",
+      "lastCycle": {
+        "edition": "ISCA 2026 (53rd)",
+        "dates": [
+          {
+            "label": "Abstract",
+            "date": "2025-11-10",
+            "note": "11:59 PM AoE"
+          },
+          {
+            "label": "Full paper",
+            "date": "2025-11-17",
+            "note": "11:59 PM AoE"
+          },
+          {
+            "label": "Rebuttal opens",
+            "date": "2026-02-16"
+          },
+          {
+            "label": "Rebuttal closes",
+            "date": "2026-03-06",
+            "note": "11:59 PM AoE"
+          },
+          {
+            "label": "Decision",
+            "date": "2026-03-27"
+          }
+        ]
+      }
     },
     {
       "name": "ICCAD 2027",
-      "note": "Not announced. For reference, the 2026 full paper deadline was 14 Apr.",
-      "watch": "https://iccad.com/2027"
+      "note": "Not announced; iccad.com/2027 returns 404 and no 2027 page appears in either sitemap.",
+      "watch": "https://iccad.com/2027",
+      "lastCycle": {
+        "edition": "ICCAD 2026 (45th)",
+        "dates": [
+          {
+            "label": "Abstract",
+            "date": "2026-04-07"
+          },
+          {
+            "label": "Full paper",
+            "date": "2026-04-14",
+            "note": "AoE"
+          },
+          {
+            "label": "Rebuttal opens",
+            "date": "2026-06-10"
+          },
+          {
+            "label": "Rebuttal closes",
+            "date": "2026-06-20"
+          },
+          {
+            "label": "Decision",
+            "date": "2026-07-11"
+          }
+        ]
+      }
     },
     {
       "name": "MICRO 2027",
-      "note": "Not announced. For reference, the 2026 full paper deadline was 7 Apr.",
-      "watch": "https://www.microarch.org/micro60/"
+      "note": "Not announced; micro60 returns 404. Note MICRO publishes EDT rather than AoE.",
+      "watch": "https://www.microarch.org/micro60/",
+      "lastCycle": {
+        "edition": "MICRO 2026 (59th)",
+        "dates": [
+          {
+            "label": "Abstract",
+            "date": "2026-03-31",
+            "note": "11:59 PM EDT"
+          },
+          {
+            "label": "Full paper",
+            "date": "2026-04-07",
+            "note": "11:59 PM EDT"
+          },
+          {
+            "label": "Rebuttal opens",
+            "date": "2026-06-03"
+          },
+          {
+            "label": "Rebuttal closes",
+            "date": "2026-06-17"
+          },
+          {
+            "label": "Decision",
+            "date": "2026-07-07"
+          }
+        ]
+      }
     }
   ]
 }

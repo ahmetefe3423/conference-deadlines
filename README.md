@@ -84,6 +84,43 @@ python3 -m http.server 8000
 
 then open `http://localhost:8000`. The page says so itself if you forget.
 
+## Checking the dates automatically
+
+```
+python3 tools/check_deadlines.py
+```
+
+Fetches every venue's call for papers, extracts the dates it finds, and compares them
+against `data.json`. Also polls the venues that have not announced yet and reports the
+moment their page stops returning 404/401. No dependencies — Python 3 standard library.
+
+```
+  [OK     ] DATE 2027     all 4 dates still present on the CFP page
+  [DRIFT  ] MICRO 2026    configured date(s) no longer appear on the CFP page — Camera-ready (2026-09-11)
+  [WAITING] DAC 2027      still HTTP 401 — not published yet
+  [LIVE   ] ISCA 2027     page is now HTTP 200 — the call for papers may be out
+```
+
+Exit code is `0` when nothing needs attention and `1` when something does, so it works
+in CI. `--json` for machine-readable output, `--quiet` to print only when action is
+needed, `--verbose` for advisory findings.
+
+**It never edits `data.json`.** That is deliberate, not laziness. Conference pages are
+not machine-readable and the traps are specific and real: `iccad.com` embeds a DATE
+promotional block containing a full AoE deadline table, which any proximity-based
+extractor files under ICCAD. The IEEE CASS PDF for ICCAD 2026 served superseded dates
+for months. DAC publishes 5 PM US Pacific while everything around it says AoE. A wrong
+date carrying a live countdown is worse than a stale one, so the tool raises a hand and
+a human decides.
+
+`DRIFT` means *look*, not *it is broken*. A venue reformatting its page can trigger it.
+
+### Weekly, on GitHub
+
+`.github/workflows/check-deadlines.yml` runs the check every Monday and opens an issue
+if anything needs review. It also validates `data.json` on every push that touches it,
+so a malformed config fails before it reaches the site. Nothing is ever auto-committed.
+
 ## Deploying
 
 Push to `main`. GitHub Pages redeploys automatically.

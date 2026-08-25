@@ -1,0 +1,79 @@
+name: Check deadlines
+
+# Weekly, plus on demand. Deadlines drift quietly - ICCAD 2026's camera-ready
+# moved from 24 Aug to 4 Sep mid-cycle with no announcement - so the point of
+# this job is to notice, not to fix.
+on:
+  schedule:
+    - cron: "0 7 * * 1"        # Mondays, 07:00 UTC
+  workflow_dispatch:
+  push:
+    paths: ["data.json"]        # validate the config whenever it is edited
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate data.json
+        run: |
+          python3 - <<'PY'
+          import json, re, sys
+          cfg = json.load(open("data.json"))
+          tz, bad = cfg["timezones"], []
+          for c in cfg["conferences"]:
+              who = f"{c.get('name','?')} {c.get('year','')}"
+              for k in ("name","year","venue","conferenceDates","callForPapers","deadlines"):
+                  if k not in c: bad.append(f"{who}: missing {k}")
+              for d in c.get("deadlines", []):
+                  w = f"{who} / {d.get('label','?')}"
+                  if not re.fullmatch(r"\d{4}-\d{2}-\d{2}", d.get("date","")):
+                      bad.append(f"{w}: bad date {d.get('date')!r}")
+                  if "timezone" not in d:
+                      bad.append(f"{w}: missing timezone")
+                  elif d["timezone"] is not None and d["timezone"] not in tz:
+                      bad.append(f"{w}: unknown timezone {d['timezone']!r}")
+                  if "time" in d and not re.fullmatch(r"\d{2}:\d{2}", d["time"]):
+                      bad.append(f"{w}: bad time {d['time']!r}")
+          if bad:
+              print("\n".join(bad)); sys.exit(1)
+          print(f"data.json OK - {len(cfg['conferences'])} conferences, "
+                f"{sum(len(c['deadlines']) for c in cfg['conferences'])} deadlines")
+          PY
+
+      - name: Check live pages
+        id: check
+        run: |
+          set +e
+          python3 tools/check_deadlines.py | tee report.txt
+          echo "status=$?" >> "$GITHUB_OUTPUT"
+
+      - name: Open an issue if something needs attention
+        if: steps.check.outputs.status == '1' && github.event_name == 'schedule'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const body = fs.readFileSync('report.txt', 'utf8');
+            const title = 'Deadline check needs review';
+            const open = await github.rest.issues.listForRepo({
+              owner: context.repo.owner, repo: context.repo.repo,
+              state: 'open', labels: 'deadline-check'
+            });
+            const text = '```\n' + body + '```\n\n' +
+              '_Nothing was changed automatically. Verify against the official page, ' +
+              'then edit `data.json` by hand._';
+            if (open.data.length) {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner, repo: context.repo.repo,
+                issue_number: open.data[0].number, body: text });
+            } else {
+              await github.rest.issues.create({
+                owner: context.repo.owner, repo: context.repo.repo,
+                title, body: text, labels: ['deadline-check'] });
+            }

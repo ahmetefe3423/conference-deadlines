@@ -115,6 +115,31 @@ a human decides.
 
 `DRIFT` means *look*, not *it is broken*. A venue reformatting its page can trigger it.
 
+### Resolving a change with an agent
+
+The script detects that something moved; it cannot tell you what it moved to, because
+regex cannot distinguish DATE's promotional block on `iccad.com` from ICCAD's own dates.
+That part needs reading comprehension.
+
+`.claude/commands/update-deadlines.md` is a prompt that does it. In Claude Code:
+
+```
+/update-deadlines
+/update-deadlines DAC ISCA
+```
+
+It carries the verification procedure — HotCRP first, official CFP second, aggregators
+never — plus every trap this project has actually hit, and it verifies its own
+extraction adversarially before writing. It edits `data.json`, runs the checker, and
+leaves the working tree dirty with a diff and a verbatim source quote per changed date.
+**It does not commit or push.** A person reads the diff before it reaches the site.
+
+It is a plain Markdown prompt, so it works with any agent that can browse and edit
+files, not only Claude Code.
+
+The division of labour: the script is cheap and runs weekly to notice *that* something
+changed; the agent is expensive and runs on demand to determine *what it changed to*.
+
 ### Weekly, on GitHub
 
 `.github/workflows/check-deadlines.yml` runs the check every Monday and opens an issue

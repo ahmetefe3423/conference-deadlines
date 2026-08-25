@@ -61,7 +61,8 @@ body{margin:0;background:var(--ground);color:var(--ink);
 
 .band{display:grid;grid-template-columns:1fr 168px minmax(0,1fr);align-items:center;
   gap:0;padding:22px 0;border-bottom:1px solid var(--rule);}
-.band.closed{opacity:.55;}
+.band.closed{opacity:.5;}
+#past .band:last-child{border-bottom:0;}
 .left{text-align:right;padding-right:26px;}
 .dl-kind{font-size:10px;letter-spacing:.15em;text-transform:uppercase;font-weight:600;}
 .dl-date{font-family:Archivo,system-ui,sans-serif;font-weight:600;font-size:17px;
@@ -142,6 +143,9 @@ h2{font-family:Archivo,system-ui,sans-serif;font-weight:600;font-size:10.5px;let
 
   <h2 id="tba-h">No dates published yet</h2>
   <div class="tba" id="tba"></div>
+
+  <h2 id="past-h">Past cycles</h2>
+  <div id="past"></div>
 
   <footer class="foot">
     Main-conference research tracks only. Every date read from the venue's own call for papers or
@@ -287,7 +291,7 @@ function run(cfg){
     const order = MODEL.map(m=>({m, nx:m.dl.find(d=>d.at>now) || null}))
                        .sort((a,b)=>(a.nx?a.nx.at:Infinity)-(b.nx?b.nx.at:Infinity));
 
-    el("bands").innerHTML = order.map(({m,nx})=>{
+    const render = ({m,nx}) => {
       const left = nx
         ? '<div class="dl-kind" data-sev="'+nx.at+'">'+esc(nx.label)+'</div>'
           + '<div class="dl-date">'+showLong(nx)+'</div>'
@@ -295,7 +299,12 @@ function run(cfg){
           + '<div class="dl-note">'+showNote(nx)+'</div>'
         : '<div class="dl-kind" style="color:var(--ink-3)">Cycle closed</div>'
           + '<div class="dl-date">'+showLong(m.dl[m.dl.length-1])+'</div>'
-          + '<div class="dl-note">last date has passed</div>';
+          + '<div class="dl-note">'
+          +   (m.cs > now
+                ? 'submissions done \u00b7 conference still ahead, '
+                  + fmt("UTC",SHORT).format(m.cs)
+                : 'last date has passed')
+          + '</div>';
 
       const sch = m.dl.map(d=>{
         const cls = d.at<=now ? "p" : (nx && d.at===nx.at ? "n" : "");
@@ -312,7 +321,15 @@ function run(cfg){
         +   '<br><a href="'+esc(m.callForPapers)+'" target="_blank" rel="noopener">call for papers</a>'
         + '</div></div>'
         + '<div class="right"><dl class="sch">'+sch+'</dl></div></section>';
-    }).join("");
+    };
+
+    const live = order.filter(o=>o.nx);
+    // Most recently finished first, so the newest closed cycle sits at the top
+    // of the past list rather than the bottom.
+    const past = order.filter(o=>!o.nx).sort((a,b)=>b.m.ce - a.m.ce);
+    el("bands").innerHTML = live.map(render).join("");
+    el("past").innerHTML  = past.map(render).join("");
+    el("past-h").style.display = past.length ? "" : "none";
 
     const tba = cfg.notAnnounced || [];
     el("tba-h").style.display = tba.length ? "" : "none";

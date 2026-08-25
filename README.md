@@ -1,38 +1,88 @@
 # Conference Deadlines
 
-Countdowns to research-track paper deadlines across computer architecture and
-EDA conferences: ICCAD, ASPLOS, MICRO, DATE, HPCA — plus DAC, ISCA and the 2027
-cycles that have not published dates yet.
+Countdowns to research-track paper deadlines across computer architecture and EDA
+conferences: ICCAD, ASPLOS, MICRO, DATE, HPCA — plus DAC, ISCA and the 2027 cycles
+that have not published dates yet.
 
-Live at: https://USERNAME.github.io/conference-deadlines
+**Live:** https://ahmetefe3423.github.io/conference-deadlines/
 
 ## Editing
 
-Everything lives in `index.html` — it is a single self-contained page with no
-build step and no dependencies. Deadlines are the `ENTRIES` array near the top
-of the `<script>` block:
+All deadlines live in **`data.json`**. You never need to touch `index.html` to add,
+change or remove one. If the JSON is malformed or a field is wrong, the page prints
+exactly what is wrong — including the line and column for a syntax error — instead of
+rendering a wrong date.
 
-```js
-{ nm:"DATE", yr:"2027", cy:"", venue:"Dresden", conf:["2027-03-22","2027-03-24"],
-  src:"https://www.date-conference.com/call-for-papers", ev:[
-  {k:"Abstract",   d:"2026-09-13", tz:"AoE"},
-  {k:"Full paper", d:"2026-09-20", tz:"AoE"}]}
+### Adding a conference
+
+```json
+{
+  "name": "DAC",
+  "year": "2027",
+  "cycle": "",
+  "venue": "San Jose",
+  "conferenceDates": ["2027-07-11", "2027-07-14"],
+  "callForPapers": "https://dac.com/2027/authors/call-for-contributions",
+  "deadlines": [
+    { "label": "Abstract",   "date": "2026-11-10", "timezone": "PDT", "time": "17:00" },
+    { "label": "Full paper", "date": "2026-11-17", "timezone": "PDT", "time": "17:00" }
+  ]
+}
 ```
 
-- `d`  — the calendar date **exactly as the venue publishes it**, `YYYY-MM-DD`.
-- `tz` — `"AoE"`, `"EDT"`, or `null` when the venue publishes no clock time.
-  `null` makes the page count to end of day and label the row accordingly,
-  rather than inventing a precision the CFP never stated.
-- `cy` — cycle label, for venues running more than one round into the same
-  conference (ASPLOS Spring / Fall).
+### Fields
 
-Bands sort themselves by nearest deadline; closed cycles fall to the bottom.
-Nothing else needs touching.
+| Field | Meaning |
+|---|---|
+| `name` | Short name shown inside the circle, e.g. `"DATE"` |
+| `year` | Shown under the name |
+| `cycle` | Label for venues running more than one round into the same conference (ASPLOS Spring / Fall). Use `""` for a single round. |
+| `venue` | City, shown under the circle |
+| `conferenceDates` | `["YYYY-MM-DD", "YYYY-MM-DD"]` — start and end |
+| `callForPapers` | URL of the official CFP |
+| `deadlines` | The dates. Any order — the page sorts them. |
 
-## Adding a timezone
+Each deadline:
 
-`OFF` at the top of the script maps a label to a UTC offset. DAC publishes
-5 PM US Pacific rather than AoE, so it will need an entry when its CFP appears.
+| Field | Meaning |
+|---|---|
+| `label` | Shown on the page, e.g. `"Full paper"` |
+| `date` | The date **exactly as the venue publishes it**, `YYYY-MM-DD` |
+| `timezone` | A name from the `timezones` map, or `null` when the venue publishes no clock time at all |
+| `time` | *Optional.* `"HH:MM"`, 24-hour. Defaults to `"23:59"`. |
+
+### Timezones
+
+`timezones` at the top of `data.json` maps a name to its offset from UTC in hours.
+Add a line if a venue uses one that is missing.
+
+Two things this exists to get right:
+
+- **AoE is UTC−12**, the last timezone on Earth, so an AoE deadline lands on the
+  *following* calendar day almost everywhere. The page shows dates as published by
+  default so they match the CFP; the selector switches to your local time.
+- **Not every venue uses AoE.** MICRO publishes EDT. DAC publishes 5 PM US Pacific,
+  which needs both `"timezone": "PDT"` and `"time": "17:00"`. Assuming AoE for DAC
+  would hand you about 19 hours that do not exist.
+
+Use `"timezone": null` when a venue states only a calendar date. The page then counts
+in whole days and labels the row, rather than inventing a precision the CFP never gave.
+
+### Not-yet-announced venues
+
+`notAnnounced` lists venues with no published dates. They appear at the bottom with no
+countdown. Move one up into `conferences` once its CFP appears.
+
+## Local preview
+
+`index.html` reads `data.json` over `fetch`, which browsers block for pages opened
+directly from disk. To preview locally:
+
+```
+python3 -m http.server 8000
+```
+
+then open `http://localhost:8000`. The page says so itself if you forget.
 
 ## Deploying
 
@@ -40,7 +90,8 @@ Push to `main`. GitHub Pages redeploys automatically.
 
 ## Provenance
 
-Every date was read from the venue's own call for papers or its HotCRP instance,
-then independently re-checked against the same source. Aggregator sites are not
-used: at time of writing at least one was publishing ISCA 2027 dates that were
-simply ISCA 2026 shifted forward a year.
+Every date was read from the venue's own call for papers or its HotCRP instance, then
+independently re-checked against the same source. Aggregator sites are deliberately not
+used: at time of writing at least one was publishing ISCA 2027 dates that were simply
+ISCA 2026 shifted forward a year, including a phantom "second round" that was really
+the Industry Track.

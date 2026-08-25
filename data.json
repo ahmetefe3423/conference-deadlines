@@ -1,0 +1,128 @@
+{
+  "timezones": {
+    "AoE": -12,
+    "EDT": -4,
+    "EST": -5,
+    "PDT": -7,
+    "PST": -8,
+    "CET": 1,
+    "CEST": 2,
+    "JST": 9
+  },
+
+  "conferences": [
+    {
+      "name": "ICCAD",
+      "year": "2026",
+      "cycle": "",
+      "venue": "San Jose",
+      "conferenceDates": ["2026-11-08", "2026-11-12"],
+      "callForPapers": "https://iccad.com/2026/authors/call-for-papers",
+      "deadlines": [
+        { "label": "Abstract",        "date": "2026-04-07", "timezone": null  },
+        { "label": "Full paper",      "date": "2026-04-14", "timezone": "AoE" },
+        { "label": "Rebuttal opens",  "date": "2026-06-10", "timezone": null  },
+        { "label": "Rebuttal closes", "date": "2026-06-20", "timezone": null  },
+        { "label": "Decision",        "date": "2026-07-11", "timezone": null  },
+        { "label": "Camera-ready",    "date": "2026-09-04", "timezone": "AoE" }
+      ]
+    },
+
+    {
+      "name": "ASPLOS",
+      "year": "2027",
+      "cycle": "Fall cycle",
+      "venue": "Heraklion, Crete",
+      "conferenceDates": ["2027-04-11", "2027-04-15"],
+      "callForPapers": "https://www.asplos-conference.org/asplos2027/cfp/",
+      "deadlines": [
+        { "label": "Full paper",      "date": "2026-09-09", "timezone": "AoE" },
+        { "label": "Rebuttal opens",  "date": "2026-12-01", "timezone": "AoE" },
+        { "label": "Rebuttal closes", "date": "2026-12-04", "timezone": "AoE" },
+        { "label": "Decision",        "date": "2026-12-21", "timezone": "AoE" }
+      ]
+    },
+
+    {
+      "name": "MICRO",
+      "year": "2026",
+      "cycle": "",
+      "venue": "Athens",
+      "conferenceDates": ["2026-10-31", "2026-11-04"],
+      "callForPapers": "https://www.microarch.org/micro59/submit/papers.php",
+      "deadlines": [
+        { "label": "Abstract",        "date": "2026-03-31", "timezone": "EDT" },
+        { "label": "Full paper",      "date": "2026-04-07", "timezone": "EDT" },
+        { "label": "Rebuttal opens",  "date": "2026-06-03", "timezone": null  },
+        { "label": "Rebuttal closes", "date": "2026-06-17", "timezone": null  },
+        { "label": "Decision",        "date": "2026-07-07", "timezone": null  },
+        { "label": "Camera-ready",    "date": "2026-09-11", "timezone": null  }
+      ]
+    },
+
+    {
+      "name": "DATE",
+      "year": "2027",
+      "cycle": "",
+      "venue": "Dresden",
+      "conferenceDates": ["2027-03-22", "2027-03-24"],
+      "callForPapers": "https://www.date-conference.com/call-for-papers",
+      "deadlines": [
+        { "label": "Abstract",     "date": "2026-09-13", "timezone": "AoE" },
+        { "label": "Full paper",   "date": "2026-09-20", "timezone": "AoE" },
+        { "label": "Decision",     "date": "2026-11-23", "timezone": "AoE" },
+        { "label": "Camera-ready", "date": "2026-12-16", "timezone": "AoE" }
+      ]
+    },
+
+    {
+      "name": "HPCA",
+      "year": "2027",
+      "cycle": "",
+      "venue": "Salt Lake City",
+      "conferenceDates": ["2027-03-20", "2027-03-24"],
+      "callForPapers": "https://conf.researchr.org/track/hpca-2027/hpca-2027-main-conference",
+      "deadlines": [
+        { "label": "Abstract",        "date": "2026-07-24", "timezone": "AoE" },
+        { "label": "Full paper",      "date": "2026-07-31", "timezone": "AoE" },
+        { "label": "Rebuttal opens",  "date": "2026-09-28", "timezone": null  },
+        { "label": "Rebuttal closes", "date": "2026-10-09", "timezone": null  },
+        { "label": "Decision",        "date": "2026-11-06", "timezone": null  }
+      ]
+    },
+
+    {
+      "name": "ASPLOS",
+      "year": "2027",
+      "cycle": "Spring cycle",
+      "venue": "Heraklion, Crete",
+      "conferenceDates": ["2027-04-11", "2027-04-15"],
+      "callForPapers": "https://www.asplos-conference.org/asplos2027/cfp/",
+      "deadlines": [
+        { "label": "Full paper",      "date": "2026-04-15", "timezone": "AoE" },
+        { "label": "Rebuttal opens",  "date": "2026-07-06", "timezone": "AoE" },
+        { "label": "Rebuttal closes", "date": "2026-07-09", "timezone": "AoE" },
+        { "label": "Decision",        "date": "2026-07-27", "timezone": "AoE" }
+      ]
+    }
+  ],
+
+  "notAnnounced": [
+    {
+      "name": "DAC 2027",
+      "note": "Conference 11-14 Jul 2027, San Jose. Call for papers returns HTTP 401 - not public yet. DAC uses 5 PM US Pacific, not AoE: when adding it, set \"time\": \"17:00\" and \"timezone\": \"PDT\"."
+    },
+    {
+      "name": "ISCA 2027",
+      "note": "No official site; every 2027 URL 404s. Aggregator listings are ISCA 2026 shifted a year - withheld."
+    },
+    {
+      "name": "ICCAD 2027",
+      "note": "Not announced. For reference, the 2026 full paper deadline was 14 Apr."
+    },
+    {
+      "name": "MICRO 2027",
+      "note": "Not announced. For reference, the 2026 full paper deadline was 7 Apr."
+    }
+  ]
+}

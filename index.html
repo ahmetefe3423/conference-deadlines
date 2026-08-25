@@ -1,4 +1,10 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Conference Deadlines</title>
+<meta name="description" content="Countdowns to research-track paper deadlines across computer architecture and EDA conferences.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
@@ -9,7 +15,7 @@
   --ink:#111820; --ink-2:#5A6771; --ink-3:#8D99A4;
   --rule:#D9DFE4; --hub-line:#C3CBD3;
   --accent:#0B6157;
-  --crit:#A81E12; --warn:#8A4B00; --ok:#46586A;
+  --crit:#A81E12; --crit-soft:#FBE9E7; --warn:#8A4B00; --ok:#46586A;
 }
 @media (prefers-color-scheme: dark){
   :root:not([data-theme="light"]){
@@ -17,7 +23,7 @@
     --ink:#E8EDF2; --ink-2:#98A6B3; --ink-3:#6B7885;
     --rule:#232C36; --hub-line:#33404C;
     --accent:#4FC4B0;
-    --crit:#FF7A6B; --warn:#E5A455; --ok:#9AA8B5;
+    --crit:#FF7A6B; --crit-soft:#331714; --warn:#E5A455; --ok:#9AA8B5;
   }
 }
 :root[data-theme="dark"]{
@@ -25,7 +31,7 @@
   --ink:#E8EDF2; --ink-2:#98A6B3; --ink-3:#6B7885;
   --rule:#232C36; --hub-line:#33404C;
   --accent:#4FC4B0;
-  --crit:#FF7A6B; --warn:#E5A455; --ok:#9AA8B5;
+  --crit:#FF7A6B; --crit-soft:#331714; --warn:#E5A455; --ok:#9AA8B5;
 }
 
 *{box-sizing:border-box;}
@@ -44,11 +50,18 @@ body{margin:0;background:var(--ground);color:var(--ink);
   background:var(--surface);color:var(--ink);border:1px solid var(--hub-line);border-radius:0;}
 .tzc select:focus-visible{outline:2px solid var(--accent);outline-offset:1px;}
 
-/* ---- the band: next deadline | hub | full schedule ---- */
+/* config problem panel */
+.err{margin-top:18px;border:1.5px solid var(--crit);background:var(--crit-soft);padding:14px 16px;}
+.err .t{font-family:Archivo,system-ui,sans-serif;font-size:12px;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--crit);margin-bottom:8px;font-weight:600;}
+.err p{margin:0 0 9px;font-size:11.5px;color:var(--ink-2);}
+.err ul{margin:0;padding-left:18px;font-size:11.5px;}
+.err li{margin-bottom:4px;}
+.err code{background:var(--surface);padding:1px 4px;}
+
 .band{display:grid;grid-template-columns:1fr 168px minmax(0,1fr);align-items:center;
   gap:0;padding:22px 0;border-bottom:1px solid var(--rule);}
 .band.closed{opacity:.55;}
-
 .left{text-align:right;padding-right:26px;}
 .dl-kind{font-size:10px;letter-spacing:.15em;text-transform:uppercase;font-weight:600;}
 .dl-date{font-family:Archivo,system-ui,sans-serif;font-weight:600;font-size:17px;
@@ -57,7 +70,6 @@ body{margin:0;background:var(--ground);color:var(--ink);
   margin-top:9px;letter-spacing:-.01em;white-space:nowrap;}
 .dl-note{font-size:9.5px;color:var(--ink-3);margin-top:4px;letter-spacing:.04em;}
 
-/* hub */
 .hub{position:relative;display:flex;flex-direction:column;align-items:center;}
 .hub::before,.hub::after{content:"";position:absolute;top:66px;height:1px;
   background:var(--hub-line);width:26px;}
@@ -75,7 +87,6 @@ body{margin:0;background:var(--ground);color:var(--ink);
 .hub .cap a{color:var(--accent);text-decoration:none;}
 .hub .cap a:hover,.hub .cap a:focus-visible{text-decoration:underline;}
 
-/* right schedule */
 .right{padding-left:26px;}
 .sch{display:grid;grid-template-columns:1fr auto;gap:2px 14px;font-size:12px;}
 .sch dt{color:var(--ink-2);}
@@ -95,6 +106,7 @@ h2{font-family:Archivo,system-ui,sans-serif;font-weight:600;font-size:10.5px;let
 
 .foot{margin-top:30px;padding-top:11px;border-top:1px solid var(--rule);
   font-size:10.5px;color:var(--ink-3);line-height:1.65;}
+.foot a{color:var(--accent);}
 
 @media (max-width:760px){
   .band{grid-template-columns:1fr;justify-items:center;gap:16px;padding:26px 0;}
@@ -105,11 +117,13 @@ h2{font-family:Archivo,system-ui,sans-serif;font-weight:600;font-size:10.5px;let
 }
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;}}
 </style>
+</head>
+<body>
 
 <div class="wrap">
   <header class="mast">
     <h1>Conference Deadlines</h1>
-    <div class="stamp">RESEARCH TRACKS · VERIFIED 2026-08-25<br>
+    <div class="stamp">RESEARCH TRACKS<br>
       <label class="tzc">SHOW DATES
         <select id="tz">
           <option value="pub">as published</option>
@@ -119,187 +133,244 @@ h2{font-family:Archivo,system-ui,sans-serif;font-weight:600;font-size:10.5px;let
       </label></div>
   </header>
 
+  <div id="err"></div>
   <div id="bands"></div>
 
-  <h2>No dates published yet</h2>
+  <h2 id="tba-h">No dates published yet</h2>
   <div class="tba" id="tba"></div>
 
   <footer class="foot">
     Main-conference research tracks only. Every date read from the venue's own call for papers or
     HotCRP, then re-checked against the same source. Timezones are per-date — MICRO publishes EDT,
     not AoE. Where a venue publishes no clock time the counter runs to end of day and says so;
-    it is never invented. Closed cycles sort to the bottom. The countdown is timezone-independent — a duration is the same everywhere, so the selector only changes which calendar date is printed. Dates with no published clock time always show as published, since there is no instant to convert.
+    it is never invented. Closed cycles sort to the bottom. The countdown is timezone-independent —
+    a duration is the same everywhere, so the selector only changes which calendar date is printed.
+    All deadlines live in
+    <a href="https://github.com/ahmetefe3423/conference-deadlines/blob/main/data.json">data.json</a>.
   </footer>
 </div>
 
 <script>
-const OFF={AoE:-12,EDT:-4}, DAY=86400000;
+/* =========================================================================
+   ENGINE. Nothing here needs editing to add or change a deadline —
+   everything lives in data.json. The schema is documented in README.md.
+   ========================================================================= */
+const DAY = 86400000;
+const el  = i => document.getElementById(i);
+const esc = s => String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
 
-/* One entry per research track. ASPLOS runs two cycles into the same
-   conference, so it appears twice. */
-const ENTRIES=[
-  { nm:"ICCAD", yr:"2026", cy:"", venue:"San Jose", conf:["2026-11-08","2026-11-12"],
-    src:"https://iccad.com/2026/authors/call-for-papers", ev:[
-    {k:"Abstract",        d:"2026-04-07", tz:null},
-    {k:"Full paper",      d:"2026-04-14", tz:"AoE"},
-    {k:"Rebuttal opens",  d:"2026-06-10", tz:null},
-    {k:"Rebuttal closes", d:"2026-06-20", tz:null},
-    {k:"Decision",        d:"2026-07-11", tz:null},
-    {k:"Camera-ready",    d:"2026-09-04", tz:"AoE"}]},
-
-  { nm:"ASPLOS", yr:"2027", cy:"Fall cycle", venue:"Heraklion, Crete", conf:["2027-04-11","2027-04-15"],
-    src:"https://www.asplos-conference.org/asplos2027/cfp/", ev:[
-    {k:"Full paper",      d:"2026-09-09", tz:"AoE"},
-    {k:"Rebuttal opens",  d:"2026-12-01", tz:"AoE"},
-    {k:"Rebuttal closes", d:"2026-12-04", tz:"AoE"},
-    {k:"Decision",        d:"2026-12-21", tz:"AoE"}]},
-
-  { nm:"MICRO", yr:"2026", cy:"", venue:"Athens", conf:["2026-10-31","2026-11-04"],
-    src:"https://www.microarch.org/micro59/submit/papers.php", ev:[
-    {k:"Abstract",        d:"2026-03-31", tz:"EDT"},
-    {k:"Full paper",      d:"2026-04-07", tz:"EDT"},
-    {k:"Rebuttal opens",  d:"2026-06-03", tz:null},
-    {k:"Rebuttal closes", d:"2026-06-17", tz:null},
-    {k:"Decision",        d:"2026-07-07", tz:null},
-    {k:"Camera-ready",    d:"2026-09-11", tz:null}]},
-
-  { nm:"DATE", yr:"2027", cy:"", venue:"Dresden", conf:["2027-03-22","2027-03-24"],
-    src:"https://www.date-conference.com/call-for-papers", ev:[
-    {k:"Abstract",        d:"2026-09-13", tz:"AoE"},
-    {k:"Full paper",      d:"2026-09-20", tz:"AoE"},
-    {k:"Decision",        d:"2026-11-23", tz:"AoE"},
-    {k:"Camera-ready",    d:"2026-12-16", tz:"AoE"}]},
-
-  { nm:"HPCA", yr:"2027", cy:"", venue:"Salt Lake City", conf:["2027-03-20","2027-03-24"],
-    src:"https://conf.researchr.org/track/hpca-2027/hpca-2027-main-conference", ev:[
-    {k:"Abstract",        d:"2026-07-24", tz:"AoE"},
-    {k:"Full paper",      d:"2026-07-31", tz:"AoE"},
-    {k:"Rebuttal opens",  d:"2026-09-28", tz:null},
-    {k:"Rebuttal closes", d:"2026-10-09", tz:null},
-    {k:"Decision",        d:"2026-11-06", tz:null}]},
-
-  { nm:"ASPLOS", yr:"2027", cy:"Spring cycle", venue:"Heraklion, Crete", conf:["2027-04-11","2027-04-15"],
-    src:"https://www.asplos-conference.org/asplos2027/cfp/", ev:[
-    {k:"Full paper",      d:"2026-04-15", tz:"AoE"},
-    {k:"Rebuttal opens",  d:"2026-07-06", tz:"AoE"},
-    {k:"Rebuttal closes", d:"2026-07-09", tz:"AoE"},
-    {k:"Decision",        d:"2026-07-27", tz:"AoE"}]}
-];
-
-const TBA=[
-  {nm:"DAC 2027",   wy:"Conference 11–14 Jul 2027, San Jose. Call for papers returns HTTP 401 — not public yet. DAC uses 5 PM US Pacific, not AoE."},
-  {nm:"ISCA 2027",  wy:"No official site; every 2027 URL 404s. Aggregator listings are ISCA 2026 shifted a year — withheld."},
-  {nm:"ICCAD 2027", wy:"Not announced. For reference, the 2026 full paper deadline was 14 Apr."},
-  {nm:"MICRO 2027", wy:"Not announced. For reference, the 2026 full paper deadline was 7 Apr."}
-];
-
-const utc = s => { const[y,m,d]=s.split("-").map(Number); return Date.UTC(y,m-1,d); };
-const at  = e => { const[y,m,d]=e.d.split("-").map(Number); const b=Date.UTC(y,m-1,d,23,59,0);
-  return e.tz===null ? b : b - OFF[e.tz]*3600000; };
-const ZONE = (()=>{ try{ return Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC"; }
-                    catch(e){ return "UTC"; } })();
-let MODE = (()=>{ try{ return localStorage.getItem("cp-tz") || "pub"; }catch(e){ return "pub"; } })();
-const zoneOf = () => MODE==="loc" ? ZONE : "UTC";
-
-/* "as published" prints the calendar date the venue printed. The other modes
-   convert the real instant, which for an AoE deadline is usually the next day. */
-const dOnly = (z,o={}) => new Intl.DateTimeFormat("en-GB",{timeZone:z,...o});
-const fLongPub  = dOnly("UTC",{day:"numeric",month:"long",year:"numeric"});
-const fShortPub = dOnly("UTC",{day:"2-digit",month:"short",year:"numeric"});
-const pubMs = d => { const[y,m,dd]=d.split("-").map(Number); return Date.UTC(y,m-1,dd,12,0); };
-
-function showLong(ev){
-  if (MODE==="pub" || ev.tz===null) return fLongPub.format(pubMs(ev.d));
-  return dOnly(zoneOf(),{day:"numeric",month:"long",year:"numeric"}).format(ev.at);
+function panel(title, intro, items){
+  el("err").innerHTML = '<div class="err"><div class="t">' + esc(title) + '</div>'
+    + '<p>' + intro + '</p>'
+    + (items.length ? '<ul>' + items.map(i=>'<li>'+i+'</li>').join("") + '</ul>' : '');
+  el("tba-h").style.display = "none";
 }
-function showShort(ev){
-  if (MODE==="pub" || ev.tz===null) return fShortPub.format(pubMs(ev.d));
-  return dOnly(zoneOf(),{day:"2-digit",month:"short",year:"numeric"}).format(ev.at);
+
+/* Turn a JSON.parse byte offset into a line and column. */
+function where(txt, msg){
+  const m = /position (\d+)/.exec(msg);
+  if (!m) return "";
+  const pos = Number(m[1]), before = txt.slice(0, pos);
+  return " — line " + before.split("\n").length + ", column " + (pos - before.lastIndexOf("\n"));
 }
-function showNote(ev){
-  if (ev.tz===null) return "time of day not published \u00b7 counting to end of day";
-  if (MODE==="pub") return "23:59 " + ev.tz;
-  const t = dOnly(zoneOf(),{hour:"2-digit",minute:"2-digit",hour12:false}).format(ev.at);
-  return "23:59 " + ev.tz + " = " + t + " " + (MODE==="loc" ? ZONE.replace(/_/g," ") : "UTC");
+
+function validate(cfg){
+  const e = [];
+  if (!cfg || typeof cfg !== "object") return ["data.json must contain a JSON object."];
+  const tz = cfg.timezones;
+  if (!tz || typeof tz !== "object") e.push("Missing <code>timezones</code> object.");
+  if (!Array.isArray(cfg.conferences)) e.push("Missing <code>conferences</code> array.");
+  if (cfg.notAnnounced !== undefined && !Array.isArray(cfg.notAnnounced))
+    e.push("<code>notAnnounced</code> must be an array.");
+
+  (cfg.conferences || []).forEach((c,i)=>{
+    const who = "Conference " + (i+1) + " (" + esc(c.name || "no name") + " " + esc(c.year || "") + ")";
+    ["name","year","venue","conferenceDates","callForPapers","deadlines"].forEach(k=>{
+      if (!(k in c)) e.push(who + ": missing <code>" + k + "</code>");
+    });
+    if (!Array.isArray(c.conferenceDates) || c.conferenceDates.length !== 2)
+      e.push(who + ": <code>conferenceDates</code> must be a pair, [start, end]");
+    if (!Array.isArray(c.deadlines) || !c.deadlines.length){
+      e.push(who + ": <code>deadlines</code> is empty");
+      return;
+    }
+    c.deadlines.forEach((d,j)=>{
+      const w = who + ", deadline " + (j+1) + " (" + esc(d.label || "no label") + ")";
+      if (!d.label) e.push(w + ": missing <code>label</code>");
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(d.date || ""))
+        e.push(w + ": <code>date</code> must be YYYY-MM-DD, got " + esc(JSON.stringify(d.date)));
+      else if (isNaN(Date.parse(d.date + "T12:00:00Z")))
+        e.push(w + ": " + esc(d.date) + " is not a real date");
+      if (!("timezone" in d))
+        e.push(w + ": missing <code>timezone</code> — use a name from <code>timezones</code>, or null if the venue publishes no clock time");
+      else if (d.timezone !== null && !(tz && d.timezone in tz))
+        e.push(w + ": unknown timezone " + esc(JSON.stringify(d.timezone))
+                 + " — add it to <code>timezones</code> in data.json, or use null");
+      if (d.time !== undefined && !/^\d{2}:\d{2}$/.test(d.time))
+        e.push(w + ": <code>time</code> must be HH:MM, got " + esc(JSON.stringify(d.time)));
+    });
+  });
+  return e;
 }
-const p2 = n => String(n).padStart(2,"0");
 
-function verbose(ms){
-  const d=Math.floor(ms/DAY), h=Math.floor(ms%DAY/3600000),
-        m=Math.floor(ms%3600000/60000), s=Math.floor(ms%60000/1000);
-  const out=[];
-  if(d)      out.push(d+(d===1?" day":" days"));
-  if(d||h)   out.push(h+(h===1?" hour":" hours"));
-  if(d||h||m)out.push(m+" min");
-  out.push(p2(s)+" sec");
-  return out.join(" ");
-}
-const sev = ms => ms<=0?"ink-3" : ms<7*DAY?"crit" : ms<30*DAY?"warn":"ok";
+function run(cfg){
+  const TZ = cfg.timezones;
+  const ZONE = (()=>{ try{ return Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC"; }
+                      catch(e){ return "UTC"; } })();
+  let MODE = (()=>{ try{ return localStorage.getItem("cd-tz") || "pub"; }catch(e){ return "pub"; } })();
+  const zoneOf = () => MODE === "loc" ? ZONE : "UTC";
 
-const MODEL = ENTRIES.map((e,i)=>({
-  ...e, i, id:e.nm+e.yr+e.cy,
-  ev:e.ev.map(x=>({...x,at:at(x)})).sort((a,b)=>a.at-b.at),
-  cs:utc(e.conf[0]), ce:utc(e.conf[1])
-}));
-const ALL = MODEL.flatMap(m=>m.ev.map(x=>({...x,id:m.id})));
-const el = i => document.getElementById(i);
+  const timeOf = d => d.time || "23:59";
+  const instant = d => {
+    const [y,m,dd] = d.date.split("-").map(Number);
+    const [hh,mi]  = timeOf(d).split(":").map(Number);
+    const base = Date.UTC(y, m-1, dd, hh, mi, 0);
+    return d.timezone === null ? base : base - TZ[d.timezone]*3600000;
+  };
+  const noon = s => { const[y,m,d]=s.split("-").map(Number); return Date.UTC(y,m-1,d,12,0); };
 
-function build(now){
-  const order = MODEL.map(m=>({m, nx:m.ev.find(x=>x.at>now)||null}))
-    .sort((a,b)=>(a.nx?a.nx.at:Infinity)-(b.nx?b.nx.at:Infinity));
+  const fmt   = (z,o) => new Intl.DateTimeFormat("en-GB",{timeZone:z,...o});
+  const LONG  = {day:"numeric",month:"long",year:"numeric"};
+  const SHORT = {day:"2-digit",month:"short",year:"numeric"};
 
-  el("bands").innerHTML = order.map(({m,nx})=>{
-    const left = nx
-      ? '<div class="dl-kind" data-sev="'+nx.at+'">'+nx.k+'</div>'
-        + '<div class="dl-date">'+showLong(nx)+'</div>'
-        + '<div class="dl-clock" data-at="'+nx.at+'"></div>'
-        + '<div class="dl-note">'+showNote(nx)+'</div>'
-      : '<div class="dl-kind" style="color:var(--ink-3)">Cycle closed</div>'
-        + '<div class="dl-date">'+showLong(m.ev[m.ev.length-1])+'</div>'
-        + '<div class="dl-note">last date has passed</div>';
+  const showLong  = d => (MODE==="pub"||d.timezone===null) ? fmt("UTC",LONG ).format(noon(d.date))
+                                                           : fmt(zoneOf(),LONG ).format(d.at);
+  const showShort = d => (MODE==="pub"||d.timezone===null) ? fmt("UTC",SHORT).format(noon(d.date))
+                                                           : fmt(zoneOf(),SHORT).format(d.at);
+  function showNote(d){
+    if (d.timezone === null) return "time of day not published · counting to end of day";
+    if (MODE === "pub")      return timeOf(d) + " " + d.timezone;
+    const t = fmt(zoneOf(),{hour:"2-digit",minute:"2-digit",hour12:false}).format(d.at);
+    return timeOf(d) + " " + d.timezone + " = " + t + " "
+         + (MODE==="loc" ? ZONE.replace(/_/g," ") : "UTC");
+  }
 
-    const sch = m.ev.map(x=>{
-      const cls = x.at<=now ? "p" : (nx && x.at===nx.at ? "n" : "");
-      return '<div class="ln '+cls+'"><dt>'+x.k+'</dt><dd>'+showShort(x)+'</dd></div>';
+  const p2 = n => String(n).padStart(2,"0");
+  function verbose(ms){
+    const d=Math.floor(ms/DAY), h=Math.floor(ms%DAY/3600000),
+          m=Math.floor(ms%3600000/60000), s=Math.floor(ms%60000/1000);
+    const o=[];
+    if(d)       o.push(d+(d===1?" day":" days"));
+    if(d||h)    o.push(h+(h===1?" hour":" hours"));
+    if(d||h||m) o.push(m+" min");
+    o.push(p2(s)+" sec");
+    return o.join(" ");
+  }
+  const sev = ms => ms<=0 ? "ink-3" : ms<7*DAY ? "crit" : ms<30*DAY ? "warn" : "ok";
+
+  const MODEL = cfg.conferences.map(c=>({
+    ...c,
+    dl: c.deadlines.map(d=>({...d, at:instant(d)})).sort((a,b)=>a.at-b.at),
+    cs: noon(c.conferenceDates[0]),
+    ce: noon(c.conferenceDates[1])
+  }));
+  const ALL = MODEL.flatMap(m=>m.dl);
+
+  function paint(now){
+    const order = MODEL.map(m=>({m, nx:m.dl.find(d=>d.at>now) || null}))
+                       .sort((a,b)=>(a.nx?a.nx.at:Infinity)-(b.nx?b.nx.at:Infinity));
+
+    el("bands").innerHTML = order.map(({m,nx})=>{
+      const left = nx
+        ? '<div class="dl-kind" data-sev="'+nx.at+'">'+esc(nx.label)+'</div>'
+          + '<div class="dl-date">'+showLong(nx)+'</div>'
+          + '<div class="dl-clock" data-at="'+nx.at+'"></div>'
+          + '<div class="dl-note">'+showNote(nx)+'</div>'
+        : '<div class="dl-kind" style="color:var(--ink-3)">Cycle closed</div>'
+          + '<div class="dl-date">'+showLong(m.dl[m.dl.length-1])+'</div>'
+          + '<div class="dl-note">last date has passed</div>';
+
+      const sch = m.dl.map(d=>{
+        const cls = d.at<=now ? "p" : (nx && d.at===nx.at ? "n" : "");
+        return '<div class="ln '+cls+'"><dt>'+esc(d.label)+'</dt><dd>'+showShort(d)+'</dd></div>';
+      }).join("");
+
+      return '<section class="band'+(nx?"":" closed")+'">'
+        + '<div class="left">'+left+'</div>'
+        + '<div class="hub"><div class="disc">'
+        +   '<span class="nm">'+esc(m.name)+'</span><span class="yr">'+esc(m.year)+'</span>'
+        +   (m.cycle ? '<span class="cy">'+esc(m.cycle)+'</span>' : '')
+        + '</div><div class="cap">'+esc(m.venue)+'<br>'
+        +   fmt("UTC",SHORT).format(m.cs)+' – '+fmt("UTC",SHORT).format(m.ce)
+        +   '<br><a href="'+esc(m.callForPapers)+'" target="_blank" rel="noopener">call for papers</a>'
+        + '</div></div>'
+        + '<div class="right"><dl class="sch">'+sch+'</dl></div></section>';
     }).join("");
 
-    return '<section class="band'+(nx?"":" closed")+'">'
-      + '<div class="left">'+left+'</div>'
-      + '<div class="hub"><div class="disc">'
-      +   '<span class="nm">'+m.nm+'</span><span class="yr">'+m.yr+'</span>'
-      +   (m.cy?'<span class="cy">'+m.cy+'</span>':'')
-      + '</div><div class="cap">'+m.venue+'<br>'+fShortPub.format(m.cs)+' – '+fShortPub.format(m.ce)
-      +   '<br><a href="'+m.src+'" target="_blank" rel="noopener">call for papers</a></div></div>'
-      + '<div class="right"><dl class="sch">'+sch+'</dl></div>'
-      + '</section>';
-  }).join("");
+    const tba = cfg.notAnnounced || [];
+    el("tba-h").style.display = tba.length ? "" : "none";
+    el("tba").innerHTML = tba.map(t=>'<div class="r"><div class="nm">'+esc(t.name)
+      + '</div><div class="wy">'+esc(t.note)+'</div></div>').join("");
+  }
 
-  el("tba").innerHTML = TBA.map(t=>'<div class="r"><div class="nm">'+t.nm
-    + '</div><div class="wy">'+t.wy+'</div></div>').join("");
-}
+  function tick(){
+    const now = Date.now();
+    const sig = ALL.map(d=>d.at>now?1:0).join("");
+    if (sig !== tick.s){ tick.s = sig; paint(now); }
+    document.querySelectorAll(".dl-clock[data-at]").forEach(n=>{
+      const ms = Number(n.dataset.at) - now;
+      n.textContent = ms>0 ? verbose(ms) : "passed";
+      n.style.color = "var(--"+sev(ms)+")";
+    });
+    document.querySelectorAll(".dl-kind[data-sev]").forEach(n=>{
+      n.style.color = "var(--"+sev(Number(n.dataset.sev)-now)+")";
+    });
+  }
 
-function tick(){
-  const now = Date.now();
-  const sig = ALL.map(e=>e.at>now?1:0).join("");
-  if(sig!==tick.s){ tick.s=sig; build(now); }
-  document.querySelectorAll(".dl-clock[data-at]").forEach(n=>{
-    const ms = Number(n.dataset.at)-now;
-    n.textContent = ms>0 ? verbose(ms) : "passed";
-    n.style.color = "var(--"+sev(ms)+")";
+  const sel = el("tz");
+  sel.querySelector('[value="loc"]').textContent = "my local time — " + ZONE.replace(/_/g," ");
+  sel.value = MODE;
+  sel.addEventListener("change", ()=>{
+    MODE = sel.value;
+    try{ localStorage.setItem("cd-tz", MODE); }catch(e){}
+    tick.s = null; tick();
   });
-  document.querySelectorAll(".dl-kind[data-sev]").forEach(n=>{
-    n.style.color = "var(--"+sev(Number(n.dataset.sev)-now)+")";
-  });
-}
-const sel = document.getElementById("tz");
-sel.querySelector('[value="loc"]').textContent = "my local time \u2014 " + ZONE.replace(/_/g," ");
-sel.value = MODE;
-sel.addEventListener("change", ()=>{
-  MODE = sel.value;
-  try{ localStorage.setItem("cp-tz", MODE); }catch(e){}
-  tick.s = null;
+
   tick();
-});
+  setInterval(tick, 1000);
+}
 
-tick(); setInterval(tick,1000);
+/* ---- load the config ---- */
+let RAW = "";
+fetch("data.json", {cache:"no-store"})
+  .then(r=>{
+    if(!r.ok) throw Object.assign(new Error("HTTP "+r.status+" "+r.statusText), {kind:"http"});
+    return r.text();
+  })
+  .then(txt=>{
+    RAW = txt;
+    let cfg;
+    try { cfg = JSON.parse(txt); }
+    catch(e){ throw Object.assign(new Error(e.message), {kind:"syntax"}); }
+    const problems = validate(cfg);
+    if (problems.length){
+      panel(problems.length + " problem" + (problems.length>1?"s":"") + " in data.json",
+        "Nothing is shown until these are fixed, so the page never renders a wrong date.",
+        problems);
+    } else {
+      run(cfg);
+    }
+  })
+  .catch(err=>{
+    if (err.kind === "syntax"){
+      panel("data.json is not valid JSON",
+        "The file loaded but could not be parsed. JSON allows no comments and no trailing "
+        + "comma after the last item in a list — those are the usual causes.",
+        ["<code>" + esc(err.message) + "</code>" + esc(where(RAW, err.message))]);
+    } else if (location.protocol === "file:"){
+      panel("Cannot read data.json from a local file",
+        "The browser blocks pages opened straight from disk from reading other files. "
+        + "This is a local-preview limitation only — it works normally once served.",
+        ["Run <code>python3 -m http.server 8000</code> in this folder, then open "
+         + "<code>http://localhost:8000</code>",
+         "Or just view the published site on GitHub Pages"]);
+    } else {
+      panel("Could not load data.json",
+        "The page loaded but its deadline data did not.",
+        ["<code>" + esc(err.message) + "</code>",
+         "Check that <code>data.json</code> sits next to <code>index.html</code>"]);
+    }
+  });
 </script>
+</body>
+</html>

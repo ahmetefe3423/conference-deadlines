@@ -1,0 +1,305 @@
+<title>Conference Deadlines</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+
+<style>
+:root{
+  --ground:#F4F6F8; --surface:#FFFFFF;
+  --ink:#111820; --ink-2:#5A6771; --ink-3:#8D99A4;
+  --rule:#D9DFE4; --hub-line:#C3CBD3;
+  --accent:#0B6157;
+  --crit:#A81E12; --warn:#8A4B00; --ok:#46586A;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --ground:#0C1116; --surface:#151C23;
+    --ink:#E8EDF2; --ink-2:#98A6B3; --ink-3:#6B7885;
+    --rule:#232C36; --hub-line:#33404C;
+    --accent:#4FC4B0;
+    --crit:#FF7A6B; --warn:#E5A455; --ok:#9AA8B5;
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0C1116; --surface:#151C23;
+  --ink:#E8EDF2; --ink-2:#98A6B3; --ink-3:#6B7885;
+  --rule:#232C36; --hub-line:#33404C;
+  --accent:#4FC4B0;
+  --crit:#FF7A6B; --warn:#E5A455; --ok:#9AA8B5;
+}
+
+*{box-sizing:border-box;}
+body{margin:0;background:var(--ground);color:var(--ink);
+  font-family:"IBM Plex Mono",ui-monospace,Menlo,monospace;font-size:13px;line-height:1.45;
+  -webkit-font-smoothing:antialiased;}
+.wrap{max-width:940px;margin:0 auto;padding:30px 20px 60px;}
+
+.mast{display:flex;align-items:baseline;justify-content:space-between;gap:14px;flex-wrap:wrap;
+  padding-bottom:10px;border-bottom:2px solid var(--ink);}
+.mast h1{font-family:Archivo,system-ui,sans-serif;font-weight:700;font-size:23px;
+  letter-spacing:-.02em;margin:0;line-height:1;}
+.mast .stamp{font-size:10.5px;color:var(--ink-3);letter-spacing:.03em;text-align:right;line-height:1.9;}
+.tzc{font-size:9.5px;letter-spacing:.1em;}
+.tzc select{font-family:inherit;font-size:10px;margin-left:6px;padding:2px 4px;
+  background:var(--surface);color:var(--ink);border:1px solid var(--hub-line);border-radius:0;}
+.tzc select:focus-visible{outline:2px solid var(--accent);outline-offset:1px;}
+
+/* ---- the band: next deadline | hub | full schedule ---- */
+.band{display:grid;grid-template-columns:1fr 168px minmax(0,1fr);align-items:center;
+  gap:0;padding:22px 0;border-bottom:1px solid var(--rule);}
+.band.closed{opacity:.55;}
+
+.left{text-align:right;padding-right:26px;}
+.dl-kind{font-size:10px;letter-spacing:.15em;text-transform:uppercase;font-weight:600;}
+.dl-date{font-family:Archivo,system-ui,sans-serif;font-weight:600;font-size:17px;
+  margin-top:3px;letter-spacing:-.01em;}
+.dl-clock{font-size:15px;font-weight:600;font-variant-numeric:tabular-nums;
+  margin-top:9px;letter-spacing:-.01em;white-space:nowrap;}
+.dl-note{font-size:9.5px;color:var(--ink-3);margin-top:4px;letter-spacing:.04em;}
+
+/* hub */
+.hub{position:relative;display:flex;flex-direction:column;align-items:center;}
+.hub::before,.hub::after{content:"";position:absolute;top:66px;height:1px;
+  background:var(--hub-line);width:26px;}
+.hub::before{right:100%;} .hub::after{left:100%;}
+.disc{width:132px;height:132px;border-radius:50%;background:var(--surface);
+  border:1.5px solid var(--hub-line);display:flex;flex-direction:column;
+  align-items:center;justify-content:center;text-align:center;padding:6px;}
+.band:not(.closed) .disc{border-color:var(--accent);}
+.disc .nm{font-family:Archivo,system-ui,sans-serif;font-weight:700;font-size:19px;
+  letter-spacing:-.02em;line-height:1;}
+.disc .yr{font-size:12px;color:var(--ink-2);margin-top:3px;font-variant-numeric:tabular-nums;}
+.disc .cy{font-size:8.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);
+  margin-top:5px;font-weight:600;}
+.hub .cap{font-size:9.5px;color:var(--ink-3);margin-top:9px;text-align:center;line-height:1.4;}
+.hub .cap a{color:var(--accent);text-decoration:none;}
+.hub .cap a:hover,.hub .cap a:focus-visible{text-decoration:underline;}
+
+/* right schedule */
+.right{padding-left:26px;}
+.sch{display:grid;grid-template-columns:1fr auto;gap:2px 14px;font-size:12px;}
+.sch dt{color:var(--ink-2);}
+.sch dd{margin:0;text-align:right;font-variant-numeric:tabular-nums;color:var(--ink-2);}
+.sch .p dt,.sch .p dd{text-decoration:line-through;color:var(--ink-3);}
+.sch .n dt,.sch .n dd{color:var(--ink);font-weight:600;}
+.ln{display:contents;}
+
+h2{font-family:Archivo,system-ui,sans-serif;font-weight:600;font-size:10.5px;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--ink-2);margin:34px 0 0;padding-bottom:6px;
+  border-bottom:1px solid var(--hub-line);}
+.tba{margin-top:10px;}
+.tba .r{display:grid;grid-template-columns:104px 1fr;gap:14px;padding:7px 0;font-size:11.5px;}
+.tba .r+.r{border-top:1px solid var(--rule);}
+.tba .nm{font-family:Archivo,system-ui,sans-serif;font-weight:600;font-size:13px;}
+.tba .wy{color:var(--ink-3);}
+
+.foot{margin-top:30px;padding-top:11px;border-top:1px solid var(--rule);
+  font-size:10.5px;color:var(--ink-3);line-height:1.65;}
+
+@media (max-width:760px){
+  .band{grid-template-columns:1fr;justify-items:center;gap:16px;padding:26px 0;}
+  .left{text-align:center;padding:0;order:2;}
+  .hub{order:1;} .hub::before,.hub::after{display:none;}
+  .right{padding:0;order:3;width:100%;max-width:320px;}
+  .dl-clock{font-size:14px;}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;}}
+</style>
+
+<div class="wrap">
+  <header class="mast">
+    <h1>Conference Deadlines</h1>
+    <div class="stamp">RESEARCH TRACKS · VERIFIED 2026-08-25<br>
+      <label class="tzc">SHOW DATES
+        <select id="tz">
+          <option value="pub">as published</option>
+          <option value="loc">my local time</option>
+          <option value="utc">UTC</option>
+        </select>
+      </label></div>
+  </header>
+
+  <div id="bands"></div>
+
+  <h2>No dates published yet</h2>
+  <div class="tba" id="tba"></div>
+
+  <footer class="foot">
+    Main-conference research tracks only. Every date read from the venue's own call for papers or
+    HotCRP, then re-checked against the same source. Timezones are per-date — MICRO publishes EDT,
+    not AoE. Where a venue publishes no clock time the counter runs to end of day and says so;
+    it is never invented. Closed cycles sort to the bottom. The countdown is timezone-independent — a duration is the same everywhere, so the selector only changes which calendar date is printed. Dates with no published clock time always show as published, since there is no instant to convert.
+  </footer>
+</div>
+
+<script>
+const OFF={AoE:-12,EDT:-4}, DAY=86400000;
+
+/* One entry per research track. ASPLOS runs two cycles into the same
+   conference, so it appears twice. */
+const ENTRIES=[
+  { nm:"ICCAD", yr:"2026", cy:"", venue:"San Jose", conf:["2026-11-08","2026-11-12"],
+    src:"https://iccad.com/2026/authors/call-for-papers", ev:[
+    {k:"Abstract",        d:"2026-04-07", tz:null},
+    {k:"Full paper",      d:"2026-04-14", tz:"AoE"},
+    {k:"Rebuttal opens",  d:"2026-06-10", tz:null},
+    {k:"Rebuttal closes", d:"2026-06-20", tz:null},
+    {k:"Decision",        d:"2026-07-11", tz:null},
+    {k:"Camera-ready",    d:"2026-09-04", tz:"AoE"}]},
+
+  { nm:"ASPLOS", yr:"2027", cy:"Fall cycle", venue:"Heraklion, Crete", conf:["2027-04-11","2027-04-15"],
+    src:"https://www.asplos-conference.org/asplos2027/cfp/", ev:[
+    {k:"Full paper",      d:"2026-09-09", tz:"AoE"},
+    {k:"Rebuttal opens",  d:"2026-12-01", tz:"AoE"},
+    {k:"Rebuttal closes", d:"2026-12-04", tz:"AoE"},
+    {k:"Decision",        d:"2026-12-21", tz:"AoE"}]},
+
+  { nm:"MICRO", yr:"2026", cy:"", venue:"Athens", conf:["2026-10-31","2026-11-04"],
+    src:"https://www.microarch.org/micro59/submit/papers.php", ev:[
+    {k:"Abstract",        d:"2026-03-31", tz:"EDT"},
+    {k:"Full paper",      d:"2026-04-07", tz:"EDT"},
+    {k:"Rebuttal opens",  d:"2026-06-03", tz:null},
+    {k:"Rebuttal closes", d:"2026-06-17", tz:null},
+    {k:"Decision",        d:"2026-07-07", tz:null},
+    {k:"Camera-ready",    d:"2026-09-11", tz:null}]},
+
+  { nm:"DATE", yr:"2027", cy:"", venue:"Dresden", conf:["2027-03-22","2027-03-24"],
+    src:"https://www.date-conference.com/call-for-papers", ev:[
+    {k:"Abstract",        d:"2026-09-13", tz:"AoE"},
+    {k:"Full paper",      d:"2026-09-20", tz:"AoE"},
+    {k:"Decision",        d:"2026-11-23", tz:"AoE"},
+    {k:"Camera-ready",    d:"2026-12-16", tz:"AoE"}]},
+
+  { nm:"HPCA", yr:"2027", cy:"", venue:"Salt Lake City", conf:["2027-03-20","2027-03-24"],
+    src:"https://conf.researchr.org/track/hpca-2027/hpca-2027-main-conference", ev:[
+    {k:"Abstract",        d:"2026-07-24", tz:"AoE"},
+    {k:"Full paper",      d:"2026-07-31", tz:"AoE"},
+    {k:"Rebuttal opens",  d:"2026-09-28", tz:null},
+    {k:"Rebuttal closes", d:"2026-10-09", tz:null},
+    {k:"Decision",        d:"2026-11-06", tz:null}]},
+
+  { nm:"ASPLOS", yr:"2027", cy:"Spring cycle", venue:"Heraklion, Crete", conf:["2027-04-11","2027-04-15"],
+    src:"https://www.asplos-conference.org/asplos2027/cfp/", ev:[
+    {k:"Full paper",      d:"2026-04-15", tz:"AoE"},
+    {k:"Rebuttal opens",  d:"2026-07-06", tz:"AoE"},
+    {k:"Rebuttal closes", d:"2026-07-09", tz:"AoE"},
+    {k:"Decision",        d:"2026-07-27", tz:"AoE"}]}
+];
+
+const TBA=[
+  {nm:"DAC 2027",   wy:"Conference 11–14 Jul 2027, San Jose. Call for papers returns HTTP 401 — not public yet. DAC uses 5 PM US Pacific, not AoE."},
+  {nm:"ISCA 2027",  wy:"No official site; every 2027 URL 404s. Aggregator listings are ISCA 2026 shifted a year — withheld."},
+  {nm:"ICCAD 2027", wy:"Not announced. For reference, the 2026 full paper deadline was 14 Apr."},
+  {nm:"MICRO 2027", wy:"Not announced. For reference, the 2026 full paper deadline was 7 Apr."}
+];
+
+const utc = s => { const[y,m,d]=s.split("-").map(Number); return Date.UTC(y,m-1,d); };
+const at  = e => { const[y,m,d]=e.d.split("-").map(Number); const b=Date.UTC(y,m-1,d,23,59,0);
+  return e.tz===null ? b : b - OFF[e.tz]*3600000; };
+const ZONE = (()=>{ try{ return Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC"; }
+                    catch(e){ return "UTC"; } })();
+let MODE = (()=>{ try{ return localStorage.getItem("cp-tz") || "pub"; }catch(e){ return "pub"; } })();
+const zoneOf = () => MODE==="loc" ? ZONE : "UTC";
+
+/* "as published" prints the calendar date the venue printed. The other modes
+   convert the real instant, which for an AoE deadline is usually the next day. */
+const dOnly = (z,o={}) => new Intl.DateTimeFormat("en-GB",{timeZone:z,...o});
+const fLongPub  = dOnly("UTC",{day:"numeric",month:"long",year:"numeric"});
+const fShortPub = dOnly("UTC",{day:"2-digit",month:"short",year:"numeric"});
+const pubMs = d => { const[y,m,dd]=d.split("-").map(Number); return Date.UTC(y,m-1,dd,12,0); };
+
+function showLong(ev){
+  if (MODE==="pub" || ev.tz===null) return fLongPub.format(pubMs(ev.d));
+  return dOnly(zoneOf(),{day:"numeric",month:"long",year:"numeric"}).format(ev.at);
+}
+function showShort(ev){
+  if (MODE==="pub" || ev.tz===null) return fShortPub.format(pubMs(ev.d));
+  return dOnly(zoneOf(),{day:"2-digit",month:"short",year:"numeric"}).format(ev.at);
+}
+function showNote(ev){
+  if (ev.tz===null) return "time of day not published \u00b7 counting to end of day";
+  if (MODE==="pub") return "23:59 " + ev.tz;
+  const t = dOnly(zoneOf(),{hour:"2-digit",minute:"2-digit",hour12:false}).format(ev.at);
+  return "23:59 " + ev.tz + " = " + t + " " + (MODE==="loc" ? ZONE.replace(/_/g," ") : "UTC");
+}
+const p2 = n => String(n).padStart(2,"0");
+
+function verbose(ms){
+  const d=Math.floor(ms/DAY), h=Math.floor(ms%DAY/3600000),
+        m=Math.floor(ms%3600000/60000), s=Math.floor(ms%60000/1000);
+  const out=[];
+  if(d)      out.push(d+(d===1?" day":" days"));
+  if(d||h)   out.push(h+(h===1?" hour":" hours"));
+  if(d||h||m)out.push(m+" min");
+  out.push(p2(s)+" sec");
+  return out.join(" ");
+}
+const sev = ms => ms<=0?"ink-3" : ms<7*DAY?"crit" : ms<30*DAY?"warn":"ok";
+
+const MODEL = ENTRIES.map((e,i)=>({
+  ...e, i, id:e.nm+e.yr+e.cy,
+  ev:e.ev.map(x=>({...x,at:at(x)})).sort((a,b)=>a.at-b.at),
+  cs:utc(e.conf[0]), ce:utc(e.conf[1])
+}));
+const ALL = MODEL.flatMap(m=>m.ev.map(x=>({...x,id:m.id})));
+const el = i => document.getElementById(i);
+
+function build(now){
+  const order = MODEL.map(m=>({m, nx:m.ev.find(x=>x.at>now)||null}))
+    .sort((a,b)=>(a.nx?a.nx.at:Infinity)-(b.nx?b.nx.at:Infinity));
+
+  el("bands").innerHTML = order.map(({m,nx})=>{
+    const left = nx
+      ? '<div class="dl-kind" data-sev="'+nx.at+'">'+nx.k+'</div>'
+        + '<div class="dl-date">'+showLong(nx)+'</div>'
+        + '<div class="dl-clock" data-at="'+nx.at+'"></div>'
+        + '<div class="dl-note">'+showNote(nx)+'</div>'
+      : '<div class="dl-kind" style="color:var(--ink-3)">Cycle closed</div>'
+        + '<div class="dl-date">'+showLong(m.ev[m.ev.length-1])+'</div>'
+        + '<div class="dl-note">last date has passed</div>';
+
+    const sch = m.ev.map(x=>{
+      const cls = x.at<=now ? "p" : (nx && x.at===nx.at ? "n" : "");
+      return '<div class="ln '+cls+'"><dt>'+x.k+'</dt><dd>'+showShort(x)+'</dd></div>';
+    }).join("");
+
+    return '<section class="band'+(nx?"":" closed")+'">'
+      + '<div class="left">'+left+'</div>'
+      + '<div class="hub"><div class="disc">'
+      +   '<span class="nm">'+m.nm+'</span><span class="yr">'+m.yr+'</span>'
+      +   (m.cy?'<span class="cy">'+m.cy+'</span>':'')
+      + '</div><div class="cap">'+m.venue+'<br>'+fShortPub.format(m.cs)+' – '+fShortPub.format(m.ce)
+      +   '<br><a href="'+m.src+'" target="_blank" rel="noopener">call for papers</a></div></div>'
+      + '<div class="right"><dl class="sch">'+sch+'</dl></div>'
+      + '</section>';
+  }).join("");
+
+  el("tba").innerHTML = TBA.map(t=>'<div class="r"><div class="nm">'+t.nm
+    + '</div><div class="wy">'+t.wy+'</div></div>').join("");
+}
+
+function tick(){
+  const now = Date.now();
+  const sig = ALL.map(e=>e.at>now?1:0).join("");
+  if(sig!==tick.s){ tick.s=sig; build(now); }
+  document.querySelectorAll(".dl-clock[data-at]").forEach(n=>{
+    const ms = Number(n.dataset.at)-now;
+    n.textContent = ms>0 ? verbose(ms) : "passed";
+    n.style.color = "var(--"+sev(ms)+")";
+  });
+  document.querySelectorAll(".dl-kind[data-sev]").forEach(n=>{
+    n.style.color = "var(--"+sev(Number(n.dataset.sev)-now)+")";
+  });
+}
+const sel = document.getElementById("tz");
+sel.querySelector('[value="loc"]').textContent = "my local time \u2014 " + ZONE.replace(/_/g," ");
+sel.value = MODE;
+sel.addEventListener("change", ()=>{
+  MODE = sel.value;
+  try{ localStorage.setItem("cp-tz", MODE); }catch(e){}
+  tick.s = null;
+  tick();
+});
+
+tick(); setInterval(tick,1000);
+</script>

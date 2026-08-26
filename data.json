@@ -96,7 +96,7 @@
         "2027-03-22",
         "2027-03-24"
       ],
-      "callForPapers": "https://www.date-conference.com/call-for-papers",
+      "callForPapers": "https://date27.date-conference.com/call-for-papers",
       "deadlines": [
         {
           "label": "Abstract",
@@ -381,6 +381,82 @@
           "date": "2026-05-06",
           "timezone": "PDT",
           "time": "17:00"
+        }
+      ]
+    },
+    {
+      "name": "DATE",
+      "year": "2026",
+      "cycle": "",
+      "venue": "Verona",
+      "conferenceDates": [
+        "2026-04-20",
+        "2026-04-22"
+      ],
+      "callForPapers": "https://web.archive.org/web/20260609113113/https://date26.date-conference.com/call-for-papers",
+      "deadlines": [
+        {
+          "label": "Abstract",
+          "date": "2025-09-07",
+          "timezone": "AoE"
+        },
+        {
+          "label": "Full paper",
+          "date": "2025-09-14",
+          "timezone": "AoE"
+        },
+        {
+          "label": "Decision",
+          "date": "2025-11-10",
+          "timezone": "AoE"
+        },
+        {
+          "label": "Camera-ready",
+          "date": "2026-01-16",
+          "timezone": "AoE"
+        }
+      ]
+    },
+    {
+      "name": "HPCA",
+      "year": "2026",
+      "cycle": "",
+      "venue": "Sydney",
+      "conferenceDates": [
+        "2026-01-31",
+        "2026-02-04"
+      ],
+      "callForPapers": "https://conf.researchr.org/track/hpca-2026/hpca-2026-main-conference",
+      "deadlines": [
+        {
+          "label": "Abstract",
+          "date": "2025-07-25",
+          "timezone": null
+        },
+        {
+          "label": "Full paper",
+          "date": "2025-08-01",
+          "timezone": null
+        },
+        {
+          "label": "Rebuttal opens",
+          "date": "2025-10-07",
+          "timezone": null
+        },
+        {
+          "label": "Rebuttal closes",
+          "date": "2025-10-20",
+          "timezone": null
+        },
+        {
+          "label": "Decision",
+          "date": "2025-11-07",
+          "timezone": null
+        },
+        {
+          "label": "Camera-ready",
+          "date": "2025-12-04",
+          "timezone": null
         }
       ]
     }

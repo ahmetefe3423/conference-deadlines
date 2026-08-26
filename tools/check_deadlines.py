@@ -135,11 +135,23 @@ def dates_in(text):
     return out
 
 
+def is_past(conf):
+    """True when every deadline in this cycle has already elapsed."""
+    today = dt.date.today().isoformat()
+    return all(d.get("date", "") < today for d in conf.get("deadlines", []))
+
+
 def check_conference(conf, verbose):
     """Compare configured dates against what the CFP page actually shows."""
     name = f"{conf['name']} {conf['year']}" + (f" {conf['cycle']}" if conf.get("cycle") else "")
     url = conf["callForPapers"]
     findings = []
+
+    # A finished cycle is history. Its dates cannot move, and conference sites
+    # rotate old calls away, so drift-checking one produces a permanent false
+    # alarm rather than a signal. Kept on the page, excluded from the check.
+    if is_past(conf):
+        return [("PAST", name, f"cycle complete, {len(conf['deadlines'])} dates on record")]
 
     status, html, err = fetch(url)
     if err:
@@ -185,8 +197,12 @@ def check_conference(conf, verbose):
 
 
 def check_unannounced(entry):
-    """Poll a venue that has not published dates. The win is catching go-live."""
-    name = entry["name"]
+    """Poll a venue whose dates are still estimated. The win is catching go-live.
+
+    Its configured date is last cycle shifted a year, so there is nothing to
+    diff against the page - the only question is whether the CFP exists yet.
+    """
+    name = f"{entry['name']} {entry['year']}"
     url = entry.get("watch")
     if not url:
         return [("SKIP", name, 'no "watch" URL in data.json — nothing to poll')]
@@ -220,9 +236,10 @@ def main():
 
     results = []
     for conf in cfg.get("conferences", []):
-        results += check_conference(conf, args.verbose)
-    for entry in cfg.get("notAnnounced", []):
-        results += check_unannounced(entry)
+        if conf.get("estimated"):
+            results += check_unannounced(conf)
+        else:
+            results += check_conference(conf, args.verbose)
 
     needs_attention = [r for r in results if r[0] in ("DRIFT", "ERROR", "LIVE")]
 

@@ -79,6 +79,10 @@ body{margin:0;background:var(--ground);color:var(--ink);
   border:1.5px solid var(--hub-line);display:flex;flex-direction:column;
   align-items:center;justify-content:center;text-align:center;padding:6px;}
 .band:not(.closed) .disc{border-color:var(--accent);}
+.band.est .disc{border-style:dashed;border-color:var(--ink-3);}
+.band.est .dl-date{color:var(--ink-2);}
+.tba-mark{font-size:15px;letter-spacing:.2em;color:var(--ink-3);font-weight:600;}
+.tba-why{font-size:10.5px;color:var(--ink-3);margin-top:5px;max-width:32ch;}
 .disc .nm{font-family:Archivo,system-ui,sans-serif;font-weight:700;font-size:19px;
   letter-spacing:-.02em;line-height:1;}
 .disc .yr{font-size:12px;color:var(--ink-2);margin-top:3px;font-variant-numeric:tabular-nums;}
@@ -141,9 +145,6 @@ h2{font-family:Archivo,system-ui,sans-serif;font-weight:600;font-size:10.5px;let
   <div id="err"></div>
   <div id="bands"></div>
 
-  <h2 id="tba-h">No dates published yet</h2>
-  <div class="tba" id="tba"></div>
-
   <h2 id="past-h">Past cycles</h2>
   <div id="past"></div>
 
@@ -171,7 +172,6 @@ function panel(title, intro, items){
   el("err").innerHTML = '<div class="err"><div class="t">' + esc(title) + '</div>'
     + '<p>' + intro + '</p>'
     + (items.length ? '<ul>' + items.map(i=>'<li>'+i+'</li>').join("") + '</ul>' : '');
-  el("tba-h").style.display = "none";
 }
 
 /* Turn a JSON.parse byte offset into a line and column. */
@@ -188,29 +188,16 @@ function validate(cfg){
   const tz = cfg.timezones;
   if (!tz || typeof tz !== "object") e.push("Missing <code>timezones</code> object.");
   if (!Array.isArray(cfg.conferences)) e.push("Missing <code>conferences</code> array.");
-  if (cfg.notAnnounced !== undefined && !Array.isArray(cfg.notAnnounced))
-    e.push("<code>notAnnounced</code> must be an array.");
-
-  (cfg.notAnnounced || []).forEach((t,i)=>{
-    const who = "notAnnounced " + (i+1) + " (" + esc(t.name || "no name") + ")";
-    if (!t.name) e.push(who + ": missing <code>name</code>");
-    if (t.lastCycle){
-      if (!Array.isArray(t.lastCycle.dates))
-        e.push(who + ": <code>lastCycle.dates</code> must be an array");
-      else t.lastCycle.dates.forEach(d=>{
-        if (!/^\d{4}-\d{2}-\d{2}$/.test(d.date || ""))
-          e.push(who + ": lastCycle date must be YYYY-MM-DD, got " + esc(JSON.stringify(d.date)));
-      });
-    }
-  });
-
   (cfg.conferences || []).forEach((c,i)=>{
     const who = "Conference " + (i+1) + " (" + esc(c.name || "no name") + " " + esc(c.year || "") + ")";
-    ["name","year","venue","conferenceDates","callForPapers","deadlines"].forEach(k=>{
+    ["name","year","venue","callForPapers","deadlines"].forEach(k=>{
       if (!(k in c)) e.push(who + ": missing <code>" + k + "</code>");
     });
-    if (!Array.isArray(c.conferenceDates) || c.conferenceDates.length !== 2)
-      e.push(who + ": <code>conferenceDates</code> must be a pair, [start, end]");
+    if (c.conferenceDates !== null
+        && (!Array.isArray(c.conferenceDates) || c.conferenceDates.length !== 2))
+      e.push(who + ": <code>conferenceDates</code> must be a pair, [start, end], or null");
+    if (c.estimated && !c.estimatedFrom)
+      e.push(who + ": an estimated entry needs <code>estimatedFrom</code> saying what it is based on");
     if (!Array.isArray(c.deadlines) || !c.deadlines.length){
       e.push(who + ": <code>deadlines</code> is empty");
       return;
@@ -282,8 +269,8 @@ function run(cfg){
   const MODEL = cfg.conferences.map(c=>({
     ...c,
     dl: c.deadlines.map(d=>({...d, at:instant(d)})).sort((a,b)=>a.at-b.at),
-    cs: noon(c.conferenceDates[0]),
-    ce: noon(c.conferenceDates[1])
+    cs: c.conferenceDates ? noon(c.conferenceDates[0]) : null,
+    ce: c.conferenceDates ? noon(c.conferenceDates[1]) : null
   }));
   const ALL = MODEL.flatMap(m=>m.dl);
 
@@ -293,14 +280,18 @@ function run(cfg){
 
     const render = ({m,nx}) => {
       const left = nx
-        ? '<div class="dl-kind" data-sev="'+nx.at+'">'+esc(nx.label)+'</div>'
+        ? '<div class="dl-kind" data-sev="'+nx.at+'">'
+          +   (m.estimated ? "Estimated" : esc(nx.label)) + '</div>'
           + '<div class="dl-date">'+showLong(nx)+'</div>'
           + '<div class="dl-clock" data-at="'+nx.at+'"></div>'
-          + '<div class="dl-note">'+showNote(nx)+'</div>'
+          + '<div class="dl-note">'
+          +   (m.estimated ? 'not announced \u00b7 based on ' + esc(m.estimatedFrom)
+                           : showNote(nx))
+          + '</div>'
         : '<div class="dl-kind" style="color:var(--ink-3)">Cycle closed</div>'
           + '<div class="dl-date">'+showLong(m.dl[m.dl.length-1])+'</div>'
           + '<div class="dl-note">'
-          +   (m.cs > now
+          +   (m.cs && m.cs > now
                 ? 'submissions done \u00b7 conference still ahead, '
                   + fmt("UTC",SHORT).format(m.cs)
                 : 'last date has passed')
@@ -311,42 +302,36 @@ function run(cfg){
         return '<div class="ln '+cls+'"><dt>'+esc(d.label)+'</dt><dd>'+showShort(d)+'</dd></div>';
       }).join("");
 
-      return '<section class="band'+(nx?"":" closed")+'">'
+      // An estimated edition has no real schedule. TBA is the honest answer:
+      // printing last cycle's dates here would read as this cycle's, which is
+      // exactly the aggregator failure this page exists to avoid.
+      const rightCol = m.estimated
+        ? '<div class="tba-mark">TBA</div>'
+          + '<div class="tba-why">No call for papers published yet. The countdown is last '
+          + 'cycle shifted a year \u2014 a planning aid, not a date.</div>'
+        : '<dl class="sch">'+sch+'</dl>';
+
+      return '<section class="band'+(nx?"":" closed")+(m.estimated?" est":"")+'">'
         + '<div class="left">'+left+'</div>'
         + '<div class="hub"><div class="disc">'
         +   '<span class="nm">'+esc(m.name)+'</span><span class="yr">'+esc(m.year)+'</span>'
         +   (m.cycle ? '<span class="cy">'+esc(m.cycle)+'</span>' : '')
-        + '</div><div class="cap">'+esc(m.venue)+'<br>'
-        +   fmt("UTC",SHORT).format(m.cs)+' – '+fmt("UTC",SHORT).format(m.ce)
-        +   '<br><a href="'+esc(m.callForPapers)+'" target="_blank" rel="noopener">call for papers</a>'
+        + '</div><div class="cap">'+esc(m.venue)
+        +   (m.cs ? '<br>' + fmt("UTC",SHORT).format(m.cs) + ' – ' + fmt("UTC",SHORT).format(m.ce) : '')
+        +   '<br><a href="'+esc(m.callForPapers)+'" target="_blank" rel="noopener">'
+        +   (m.estimated ? 'conference site' : 'call for papers') + '</a>'
         + '</div></div>'
-        + '<div class="right"><dl class="sch">'+sch+'</dl></div></section>';
+        + '<div class="right">'+rightCol+'</div></section>';
     };
 
     const live = order.filter(o=>o.nx);
     // Most recently finished first, so the newest closed cycle sits at the top
     // of the past list rather than the bottom.
-    const past = order.filter(o=>!o.nx).sort((a,b)=>b.m.ce - a.m.ce);
+    const past = order.filter(o=>!o.nx).sort((a,b)=>(b.m.ce||0) - (a.m.ce||0));
     el("bands").innerHTML = live.map(render).join("");
     el("past").innerHTML  = past.map(render).join("");
     el("past-h").style.display = past.length ? "" : "none";
 
-    const tba = cfg.notAnnounced || [];
-    el("tba-h").style.display = tba.length ? "" : "none";
-    el("tba").innerHTML = tba.map(t=>{
-      // Last cycle's ACTUAL dates, shown as reference. Never a prediction and
-      // never a countdown — an aggregator publishing last year's dates shifted
-      // forward by one is exactly what this page exists not to do.
-      const prior = t.lastCycle && Array.isArray(t.lastCycle.dates)
-        ? '<div class="last"><b>' + esc(t.lastCycle.edition || "last cycle") + ' actually ran</b><br>'
-          + t.lastCycle.dates.map(d=>'<span>' + esc(d.label) + ' '
-              + fmt("UTC",SHORT).format(noon(d.date))
-              + (d.note ? ' (' + esc(d.note) + ')' : '') + '</span>').join(' &nbsp;·&nbsp; ')
-          + '</div>'
-        : '';
-      return '<div class="r"><div class="nm">'+esc(t.name)+'</div>'
-           + '<div><div class="wy">'+esc(t.note)+'</div>'+prior+'</div></div>';
-    }).join("");
   }
 
   function tick(){

@@ -68,37 +68,50 @@ Two things this exists to get right:
 Use `"timezone": null` when a venue states only a calendar date. The page then counts
 in whole days and labels the row, rather than inventing a precision the CFP never gave.
 
-### Not-yet-announced venues
+### Venues that have not announced yet
 
-`notAnnounced` lists venues with no published dates. They appear at the bottom with no
-countdown. Move one up into `conferences` once its CFP appears.
-
-Each may carry an optional `lastCycle` block — the previous cycle's **actual** dates,
-shown as reference:
+A venue whose call for papers is not out yet stays in `conferences` with two extra
+fields, so it still appears in the ordering rather than being exiled to a footnote:
 
 ```json
 {
-  "name": "ISCA 2027",
-  "note": "No official site; every 2027 URL 404s.",
+  "name": "ISCA", "year": "2027",
+  "estimated": true,
+  "estimatedFrom": "ISCA 2026 abstract deadline, 10 Nov 2025",
   "watch": "https://iscaconf.org/isca2027/",
-  "lastCycle": {
-    "edition": "ISCA 2026 (53rd)",
-    "dates": [
-      { "label": "Full paper", "date": "2025-11-17", "note": "11:59 PM AoE" }
-    ]
-  }
+  "venue": "TBA",
+  "conferenceDates": null,
+  "callForPapers": "https://iscaconf.org/",
+  "deadlines": [
+    { "label": "Abstract", "date": "2026-11-10", "timezone": "AoE" }
+  ]
 }
 ```
 
-These render as plain text with **no countdown attached**, and are labelled as what
-last cycle *actually ran* — never as a prediction for this one.
+The date is last cycle's equivalent shifted forward one year. The page labels the
+counter **Estimated**, prints `not announced - based on <estimatedFrom>` beneath it,
+draws the circle with a dashed border, and shows **TBA** on the right instead of a
+schedule. `estimatedFrom` is required — an estimate that cannot say what it is based
+on does not go on the page.
 
-That distinction is the entire point. While this repo was being built, an aggregator
-was publishing a full ISCA 2027 schedule — abstract 10 Nov, paper 17 Nov, notification
-27 Mar, plus a "second submission round" on 5 and 12 Dec. Every one of those is an
-ISCA 2026 date shifted forward exactly one year, and the "second round" is really
-ISCA's separate Industry Track. It looked authoritative and was entirely invented.
-Last year's date is useful; last year's date wearing this year's label is not.
+Why it is framed that way: while this repo was being built, an aggregator was
+publishing a full ISCA 2027 schedule that was ISCA 2026 shifted a year, presented as
+fact, including a "second submission round" that was really ISCA's Industry Track.
+The arithmetic here is identical; the difference is entirely in the labelling. Never
+let an estimate render as a confirmed date.
+
+`conferenceDates` may be `null` when the conference dates are unknown. DAC is the case
+where they are known well before the CFP, so it keeps them.
+
+When the real call for papers appears, drop `estimated`, `estimatedFrom` and `watch`,
+and replace the single estimated deadline with the published schedule.
+
+### Past cycles
+
+An edition whose dates have all passed moves automatically into a **Past cycles**
+section at the foot of the page, newest first. Nothing marks it as past — the page
+works it out. Keeping one finished cycle per venue is what makes the estimates
+meaningful, and lets you eyeball how a venue's timing moves year to year.
 
 ## Local preview
 

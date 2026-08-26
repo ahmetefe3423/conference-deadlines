@@ -87,44 +87,6 @@
       ]
     },
     {
-      "name": "MICRO",
-      "year": "2026",
-      "cycle": "",
-      "venue": "Athens",
-      "conferenceDates": [
-        "2026-10-31",
-        "2026-11-04"
-      ],
-      "callForPapers": "https://www.microarch.org/micro59/submit/papers.php",
-      "deadlines": [
-        {
-          "label": "Abstract",
-          "date": "2026-03-31",
-          "timezone": "EDT"
-        },
-        {
-          "label": "Full paper",
-          "date": "2026-04-07",
-          "timezone": "EDT"
-        },
-        {
-          "label": "Rebuttal opens",
-          "date": "2026-06-03",
-          "timezone": null
-        },
-        {
-          "label": "Rebuttal closes",
-          "date": "2026-06-17",
-          "timezone": null
-        },
-        {
-          "label": "Decision",
-          "date": "2026-07-07",
-          "timezone": null
-        }
-      ]
-    },
-    {
       "name": "DATE",
       "year": "2027",
       "cycle": "",
@@ -196,6 +158,82 @@
       ]
     },
     {
+      "name": "DAC",
+      "year": "2027",
+      "cycle": "",
+      "estimated": true,
+      "estimatedFrom": "DAC 2026 abstract deadline, 11 Nov 2025",
+      "watch": "https://dac.com/2027/authors/call-for-contributions",
+      "venue": "San Jose",
+      "conferenceDates": [
+        "2027-07-11",
+        "2027-07-14"
+      ],
+      "callForPapers": "https://dac.com/about/future-dac-conferences",
+      "deadlines": [
+        {
+          "label": "Abstract",
+          "date": "2026-11-11",
+          "timezone": "PST",
+          "time": "17:00"
+        }
+      ]
+    },
+    {
+      "name": "ISCA",
+      "year": "2027",
+      "cycle": "",
+      "estimated": true,
+      "estimatedFrom": "ISCA 2026 abstract deadline, 10 Nov 2025",
+      "watch": "https://iscaconf.org/isca2027/",
+      "venue": "TBA",
+      "conferenceDates": null,
+      "callForPapers": "https://iscaconf.org/",
+      "deadlines": [
+        {
+          "label": "Abstract",
+          "date": "2026-11-10",
+          "timezone": "AoE"
+        }
+      ]
+    },
+    {
+      "name": "MICRO",
+      "year": "2027",
+      "cycle": "",
+      "estimated": true,
+      "estimatedFrom": "MICRO 2026 abstract deadline, 31 Mar 2026",
+      "watch": "https://www.microarch.org/micro60/",
+      "venue": "TBA",
+      "conferenceDates": null,
+      "callForPapers": "https://www.microarch.org/",
+      "deadlines": [
+        {
+          "label": "Abstract",
+          "date": "2027-03-31",
+          "timezone": "EDT"
+        }
+      ]
+    },
+    {
+      "name": "ICCAD",
+      "year": "2027",
+      "cycle": "",
+      "estimated": true,
+      "estimatedFrom": "ICCAD 2026 abstract deadline, 7 Apr 2026",
+      "watch": "https://iccad.com/2027",
+      "venue": "TBA",
+      "conferenceDates": null,
+      "callForPapers": "https://iccad.com/",
+      "deadlines": [
+        {
+          "label": "Abstract",
+          "date": "2027-04-07",
+          "timezone": null
+        }
+      ]
+    },
+    {
       "name": "ASPLOS",
       "year": "2027",
       "cycle": "Spring cycle",
@@ -227,132 +265,123 @@
           "timezone": "AoE"
         }
       ]
-    }
-  ],
-  "notAnnounced": [
-    {
-      "name": "DAC 2027",
-      "note": "Conference 11-14 Jul 2027, San Jose. Research call for papers returns HTTP 401 - not public yet. DAC uses 5 PM US Pacific, not AoE: set \"time\": \"17:00\" and \"timezone\": \"PST\". DAC runs no rebuttal phase. Last cycle the submission site opened 30 Sep, about six weeks before the abstract deadline, so the 2027 call should surface around late Sep 2026.",
-      "watch": "https://dac.com/2027/authors/call-for-contributions",
-      "lastCycle": {
-        "edition": "DAC 2026 (63rd)",
-        "dates": [
-          {
-            "label": "Abstract",
-            "date": "2025-11-11",
-            "note": "5 PM PST"
-          },
-          {
-            "label": "Full paper",
-            "date": "2025-11-19",
-            "note": "5 PM PST, extended from 18 Nov"
-          },
-          {
-            "label": "Decision",
-            "date": "2026-03-09"
-          },
-          {
-            "label": "Camera-ready",
-            "date": "2026-04-14"
-          }
-        ]
-      }
     },
     {
-      "name": "ISCA 2027",
-      "note": "No official site; every 2027 URL 404s. Aggregators list ISCA 2027 dates that are exactly the 2026 dates below shifted one year, plus a \"second round\" that is really the Industry Track (abstract 5 Dec, paper 12 Dec 2025). Withheld.",
-      "watch": "https://iscaconf.org/isca2027/",
-      "lastCycle": {
-        "edition": "ISCA 2026 (53rd)",
-        "dates": [
-          {
-            "label": "Abstract",
-            "date": "2025-11-10",
-            "note": "11:59 PM AoE"
-          },
-          {
-            "label": "Full paper",
-            "date": "2025-11-17",
-            "note": "11:59 PM AoE"
-          },
-          {
-            "label": "Rebuttal opens",
-            "date": "2026-02-16"
-          },
-          {
-            "label": "Rebuttal closes",
-            "date": "2026-03-06",
-            "note": "11:59 PM AoE"
-          },
-          {
-            "label": "Decision",
-            "date": "2026-03-27"
-          }
-        ]
-      }
+      "name": "MICRO",
+      "year": "2026",
+      "cycle": "",
+      "venue": "Athens",
+      "conferenceDates": [
+        "2026-10-31",
+        "2026-11-04"
+      ],
+      "callForPapers": "https://www.microarch.org/micro59/submit/papers.php",
+      "deadlines": [
+        {
+          "label": "Abstract",
+          "date": "2026-03-31",
+          "timezone": "EDT"
+        },
+        {
+          "label": "Full paper",
+          "date": "2026-04-07",
+          "timezone": "EDT"
+        },
+        {
+          "label": "Rebuttal opens",
+          "date": "2026-06-03",
+          "timezone": null
+        },
+        {
+          "label": "Rebuttal closes",
+          "date": "2026-06-17",
+          "timezone": null
+        },
+        {
+          "label": "Decision",
+          "date": "2026-07-07",
+          "timezone": null
+        }
+      ]
     },
     {
-      "name": "ICCAD 2027",
-      "note": "Not announced; iccad.com/2027 returns 404 and no 2027 page appears in either sitemap.",
-      "watch": "https://iccad.com/2027",
-      "lastCycle": {
-        "edition": "ICCAD 2026 (45th)",
-        "dates": [
-          {
-            "label": "Abstract",
-            "date": "2026-04-07"
-          },
-          {
-            "label": "Full paper",
-            "date": "2026-04-14",
-            "note": "AoE"
-          },
-          {
-            "label": "Rebuttal opens",
-            "date": "2026-06-10"
-          },
-          {
-            "label": "Rebuttal closes",
-            "date": "2026-06-20"
-          },
-          {
-            "label": "Decision",
-            "date": "2026-07-11"
-          }
-        ]
-      }
+      "name": "DAC",
+      "year": "2026",
+      "cycle": "",
+      "venue": "Long Beach",
+      "conferenceDates": [
+        "2026-07-26",
+        "2026-07-29"
+      ],
+      "callForPapers": "https://dac.com/2026/research-manuscript-submissions",
+      "deadlines": [
+        {
+          "label": "Abstract",
+          "date": "2025-11-11",
+          "timezone": "PST",
+          "time": "17:00"
+        },
+        {
+          "label": "Full paper",
+          "date": "2025-11-19",
+          "timezone": "PST",
+          "time": "17:00"
+        },
+        {
+          "label": "Decision",
+          "date": "2026-03-09",
+          "timezone": null
+        },
+        {
+          "label": "Camera-ready",
+          "date": "2026-04-14",
+          "timezone": null
+        }
+      ]
     },
     {
-      "name": "MICRO 2027",
-      "note": "Not announced; micro60 returns 404. Note MICRO publishes EDT rather than AoE.",
-      "watch": "https://www.microarch.org/micro60/",
-      "lastCycle": {
-        "edition": "MICRO 2026 (59th)",
-        "dates": [
-          {
-            "label": "Abstract",
-            "date": "2026-03-31",
-            "note": "11:59 PM EDT"
-          },
-          {
-            "label": "Full paper",
-            "date": "2026-04-07",
-            "note": "11:59 PM EDT"
-          },
-          {
-            "label": "Rebuttal opens",
-            "date": "2026-06-03"
-          },
-          {
-            "label": "Rebuttal closes",
-            "date": "2026-06-17"
-          },
-          {
-            "label": "Decision",
-            "date": "2026-07-07"
-          }
-        ]
-      }
+      "name": "ISCA",
+      "year": "2026",
+      "cycle": "",
+      "venue": "Raleigh",
+      "conferenceDates": [
+        "2026-06-27",
+        "2026-07-01"
+      ],
+      "callForPapers": "https://iscaconf.org/isca2026/submit/callforpapers.php",
+      "deadlines": [
+        {
+          "label": "Abstract",
+          "date": "2025-11-10",
+          "timezone": "AoE"
+        },
+        {
+          "label": "Full paper",
+          "date": "2025-11-17",
+          "timezone": "AoE"
+        },
+        {
+          "label": "Rebuttal opens",
+          "date": "2026-02-16",
+          "timezone": null
+        },
+        {
+          "label": "Rebuttal closes",
+          "date": "2026-03-06",
+          "timezone": "AoE"
+        },
+        {
+          "label": "Decision",
+          "date": "2026-03-27",
+          "timezone": null
+        },
+        {
+          "label": "Camera-ready",
+          "date": "2026-05-06",
+          "timezone": "PDT",
+          "time": "17:00"
+        }
+      ]
     }
   ]
 }

@@ -303,13 +303,16 @@ function run(cfg){
           +   (m.estimated ? 'not announced \u00b7 based on ' + esc(m.estimatedFrom)
                            : showNote(nx))
           + '</div>'
-        : '<div class="dl-kind" style="color:var(--ink-3)">Cycle closed</div>'
-          + '<div class="dl-date">'+showLong(m.dl[m.dl.length-1])+'</div>'
-          + '<div class="dl-note">'
+        // A finished cycle anchors on its FIRST deadline, not its last. The
+        // closing camera-ready date carries no information you would compare
+        // year to year; the submission deadline is the whole point of keeping
+        // the cycle on the page.
+        : '<div class="dl-kind" style="color:var(--ink-3)">'+esc(m.dl[0].label)+'</div>'
+          + '<div class="dl-date">'+showLong(m.dl[0])+'</div>'
+          + '<div class="dl-note">cycle closed'
           +   (m.cs && m.cs > now
-                ? 'submissions done \u00b7 conference still ahead, '
-                  + fmt("UTC",SHORT).format(m.cs)
-                : 'last date has passed')
+                ? ' \u00b7 conference still ahead, ' + fmt("UTC",SHORT).format(m.cs)
+                : '')
           + '</div>';
 
       const sch = m.dl.map(d=>{

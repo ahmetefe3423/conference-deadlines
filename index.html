@@ -165,6 +165,12 @@ h2{font-family:Archivo,system-ui,sans-serif;font-weight:600;font-size:10.5px;let
    everything lives in data.json. The schema is documented in README.md.
    ========================================================================= */
 const DAY = 86400000;
+
+/* Bump alongside any data.json change the engine must understand. GitHub Pages
+   caches index.html for 10 minutes while data.json is fetched with no-store, so
+   a fresh config can reach a stale engine right after a deploy. That mismatch
+   used to surface as bogus validation errors; now it identifies itself. */
+const ENGINE_SCHEMA = 2;
 const el  = i => document.getElementById(i);
 const esc = s => String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
 
@@ -373,6 +379,14 @@ fetch("data.json", {cache:"no-store"})
     let cfg;
     try { cfg = JSON.parse(txt); }
     catch(e){ throw Object.assign(new Error(e.message), {kind:"syntax"}); }
+    if ((cfg.schema || 1) > ENGINE_SCHEMA){
+      panel("This page is out of date",
+        "Your browser is running a cached copy of the page against newer deadline data, "
+        + "so it cannot read the file correctly. Nothing is wrong with the data.",
+        ["Hard-refresh: <code>Ctrl+Shift+R</code>, or <code>Cmd+Shift+R</code> on a Mac",
+         "Or wait about ten minutes — the cache expires on its own"]);
+      return;
+    }
     const problems = validate(cfg);
     if (problems.length){
       panel(problems.length + " problem" + (problems.length>1?"s":"") + " in data.json",

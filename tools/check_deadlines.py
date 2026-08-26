@@ -235,6 +235,10 @@ def main():
         return 2
 
     results = []
+    if cfg.get("schema") != 2:
+        results.append(("ERROR", "data.json",
+                        f"schema is {cfg.get('schema')!r}, expected 2 — "
+                        "engine and config may be out of step"))
     for conf in cfg.get("conferences", []):
         if conf.get("estimated"):
             results += check_unannounced(conf)

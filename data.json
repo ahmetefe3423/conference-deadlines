@@ -162,21 +162,28 @@
       "name": "DAC",
       "year": "2027",
       "cycle": "",
-      "estimated": true,
-      "estimatedFrom": "DAC 2026 abstract deadline, 11 Nov 2025",
-      "watch": "https://dac.com/2027/authors/call-for-contributions",
       "venue": "San Jose",
       "conferenceDates": [
         "2027-07-11",
         "2027-07-14"
       ],
-      "callForPapers": "https://dac.com/about/future-dac-conferences",
+      "callForPapers": "https://dac.com/2027/program/research-manuscript-submissions",
       "deadlines": [
         {
-          "label": "Abstract",
-          "date": "2026-11-11",
+          "label": "Full paper",
+          "date": "2026-11-18",
           "timezone": "PST",
           "time": "17:00"
+        },
+        {
+          "label": "Decision",
+          "date": "2027-03-08",
+          "timezone": null
+        },
+        {
+          "label": "Camera-ready",
+          "date": "2027-03-31",
+          "timezone": null
         }
       ]
     },

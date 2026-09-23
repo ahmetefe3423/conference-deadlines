@@ -38,7 +38,7 @@ rendering a wrong date.
 | `year` | Shown under the name |
 | `cycle` | Label for venues running more than one round into the same conference (ASPLOS Spring / Fall). Use `""` for a single round. |
 | `venue` | City, shown under the circle |
-| `conferenceDates` | `["YYYY-MM-DD", "YYYY-MM-DD"]` — start and end |
+| `conferenceDates` | `["YYYY-MM-DD", "YYYY-MM-DD"]` — start and end. Also the cycle's last event: see [Past cycles](#past-cycles). |
 | `callForPapers` | URL of the official CFP |
 | `deadlines` | The dates. Any order — the page sorts them. |
 
@@ -108,9 +108,23 @@ and replace the single estimated deadline with the published schedule.
 
 ### Past cycles
 
-An edition whose dates have all passed moves automatically into a **Past cycles**
-section at the foot of the page, newest first. Nothing marks it as past — the page
-works it out. Keeping one finished cycle per venue is what makes the estimates
+**The conference itself is the last event of a cycle, not the camera-ready date.**
+When every deadline has elapsed the countdown switches to the meeting — the label reads
+`Conference begins`, and while it is running the edition says `Under way` and sorts
+above everything still ahead of it. Only when the last day ends does the edition move
+into the **Past cycles** section at the foot of the page, newest first. Nothing marks
+it as past — the page works it out.
+
+This is what `conferenceDates` is for beyond display. Without it, an edition whose
+submission and camera-ready dates are behind it would read as finished while the
+conference was still six weeks away, which is how ICCAD 2026 and MICRO 2026 both
+looked. An entry with `"conferenceDates": null` has no such event, so it closes when
+its last deadline passes.
+
+No venue publishes an opening clock time, so the counter runs to the **start** of the
+opening day and the cycle closes at the **end** of the last day, both in UTC. Neither
+boundary is precise to the hour in any particular city; the note under the counter says
+so rather than implying otherwise. Keeping one finished cycle per venue is what makes the estimates
 meaningful, and lets you eyeball how a venue's timing moves year to year.
 
 ## Local preview

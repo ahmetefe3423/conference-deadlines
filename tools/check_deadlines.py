@@ -136,7 +136,13 @@ def dates_in(text):
 
 
 def is_past(conf):
-    """True when every deadline in this cycle has already elapsed."""
+    """True when every deadline in this cycle has already elapsed.
+
+    Narrower than the page's "Past cycles": there an edition stays live until
+    its conference has finished. Here the only question is whether a date can
+    still move, and an elapsed deadline cannot, so the conference dates are
+    irrelevant to this decision.
+    """
     today = dt.date.today().isoformat()
     return all(d.get("date", "") < today for d in conf.get("deadlines", []))
 
@@ -151,7 +157,7 @@ def check_conference(conf, verbose):
     # rotate old calls away, so drift-checking one produces a permanent false
     # alarm rather than a signal. Kept on the page, excluded from the check.
     if is_past(conf):
-        return [("PAST", name, f"cycle complete, {len(conf['deadlines'])} dates on record")]
+        return [("PAST", name, f"every deadline elapsed, {len(conf['deadlines'])} dates on record")]
 
     status, html, err = fetch(url)
     if err:

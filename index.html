@@ -152,7 +152,9 @@ h2{font-family:Archivo,system-ui,sans-serif;font-weight:600;font-size:10.5px;let
     Main-conference research tracks only. Every date read from the venue's own call for papers or
     HotCRP, then re-checked against the same source. Timezones are per-date — MICRO publishes EDT,
     not AoE. Where a venue publishes no clock time the counter runs to end of day and says so;
-    it is never invented. Closed cycles sort to the bottom. The countdown is timezone-independent —
+    it is never invented. The conference itself is the last event of a cycle, so an edition
+    keeps counting down after its final deadline; once the meeting ends the cycle sorts to
+    the bottom. The countdown is timezone-independent —
     a duration is the same everywhere, so the selector only changes which calendar date is printed.
     All deadlines live in
     <a href="https://github.com/ahmetefe3423/conference-deadlines/blob/main/data.json">data.json</a>.
@@ -251,6 +253,8 @@ function run(cfg){
     return d.timezone === null ? base : base - TZ[d.timezone]*3600000;
   };
   const noon = s => { const[y,m,d]=s.split("-").map(Number); return Date.UTC(y,m-1,d,12,0); };
+  const dayOpens  = s => { const[y,m,d]=s.split("-").map(Number); return Date.UTC(y,m-1,d,0,0); };
+  const dayCloses = s => { const[y,m,d]=s.split("-").map(Number); return Date.UTC(y,m-1,d,23,59); };
 
   const fmt   = (z,o) => new Intl.DateTimeFormat("en-GB",{timeZone:z,...o});
   const LONG  = {day:"numeric",month:"long",year:"numeric"};
@@ -285,34 +289,62 @@ function run(cfg){
     ...c,
     dl: c.deadlines.map(d=>({...d, at:instant(d)})).sort((a,b)=>a.at-b.at),
     cs: c.conferenceDates ? noon(c.conferenceDates[0]) : null,
-    ce: c.conferenceDates ? noon(c.conferenceDates[1]) : null
+    ce: c.conferenceDates ? noon(c.conferenceDates[1]) : null,
+    // The meeting itself is the last event in a cycle, not the camera-ready
+    // date. Without it an edition whose deadlines have all elapsed drops into
+    // "Past cycles" while the conference is still weeks away - ICCAD 2026 sat
+    // there with its own conference six weeks out. No venue publishes an
+    // opening clock time, so this counts to the start of the opening day and
+    // the cycle closes at the end of the last day.
+    opens:  c.conferenceDates ? dayOpens(c.conferenceDates[0])  : null,
+    closes: c.conferenceDates ? dayCloses(c.conferenceDates[1]) : null
   }));
-  const ALL = MODEL.flatMap(m=>m.dl);
+  // Repaint when any of these instants is crossed - the conference boundaries
+  // included, or the page would never notice the meeting starting or ending.
+  const ALL = MODEL.flatMap(m=>m.dl.map(d=>d.at)
+                                   .concat(m.opens===null ? [] : [m.opens, m.closes]));
 
   function paint(now){
-    const order = MODEL.map(m=>({m, nx:m.dl.find(d=>d.at>now) || null}))
-                       .sort((a,b)=>(a.nx?a.nx.at:Infinity)-(b.nx?b.nx.at:Infinity));
+    const order = MODEL.map(m=>{
+      const nx = m.dl.find(d=>d.at>now)
+              || (m.opens !== null && m.opens > now
+                    ? {label:"Conference begins", date:m.conferenceDates[0],
+                       timezone:null, at:m.opens, isConf:true}
+                    : null);
+      // Deadlines done, opening day reached, last day not yet over.
+      return {m, nx, running: !nx && m.closes !== null && m.closes > now};
+    });
+    // A conference happening right now outranks everything still ahead of it.
+    const rank = o => o.running ? -1 : (o.nx ? o.nx.at : Infinity);
+    order.sort((a,b)=>rank(a)-rank(b));
 
-    const render = ({m,nx}) => {
-      const left = nx
+    const render = ({m,nx,running}) => {
+      const left = running
+        ? '<div class="dl-kind" style="color:var(--crit)">Under way</div>'
+          + '<div class="dl-date">'+fmt("UTC",LONG).format(m.cs)+'</div>'
+          + '<div class="dl-note">the conference is running now, through '
+          +   fmt("UTC",SHORT).format(m.ce) + '</div>'
+        : nx
         ? '<div class="dl-kind" data-sev="'+nx.at+'">'
           +   (m.estimated ? "Estimated" : esc(nx.label)) + '</div>'
           + '<div class="dl-date">'+showLong(nx)+'</div>'
           + '<div class="dl-clock" data-at="'+nx.at+'"></div>'
           + '<div class="dl-note">'
           +   (m.estimated ? 'not announced \u00b7 based on ' + esc(m.estimatedFrom)
-                           : showNote(nx))
+                : nx.isConf ? 'every deadline passed \u00b7 no opening time published, '
+                              + 'counting to the opening day'
+                            : showNote(nx))
           + '</div>'
         // A finished cycle anchors on its FIRST deadline, not its last. The
         // closing camera-ready date carries no information you would compare
         // year to year; the submission deadline is the whole point of keeping
         // the cycle on the page.
+        // Reaching here means the conference itself is over too - while it is
+        // still ahead, the cycle counts down to it rather than closing.
         : '<div class="dl-kind" style="color:var(--ink-3)">'+esc(m.dl[0].label)+'</div>'
           + '<div class="dl-date">'+showLong(m.dl[0])+'</div>'
           + '<div class="dl-note">cycle closed'
-          +   (m.cs && m.cs > now
-                ? ' \u00b7 conference still ahead, ' + fmt("UTC",SHORT).format(m.cs)
-                : '')
+          +   (m.ce ? ' \u00b7 conference ended ' + fmt("UTC",SHORT).format(m.ce) : '')
           + '</div>';
 
       const sch = m.dl.map(d=>{
@@ -329,7 +361,7 @@ function run(cfg){
           + 'cycle shifted a year \u2014 a planning aid, not a date.</div>'
         : '<dl class="sch">'+sch+'</dl>';
 
-      return '<section class="band'+(nx?"":" closed")+(m.estimated?" est":"")+'">'
+      return '<section class="band'+((nx||running)?"":" closed")+(m.estimated?" est":"")+'">'
         + '<div class="left">'+left+'</div>'
         + '<div class="hub"><div class="disc">'
         +   '<span class="nm">'+esc(m.name)+'</span><span class="yr">'+esc(m.year)+'</span>'
@@ -342,10 +374,10 @@ function run(cfg){
         + '<div class="right">'+rightCol+'</div></section>';
     };
 
-    const live = order.filter(o=>o.nx);
+    const live = order.filter(o=>o.nx || o.running);
     // Most recently finished first, so the newest closed cycle sits at the top
     // of the past list rather than the bottom.
-    const past = order.filter(o=>!o.nx).sort((a,b)=>(b.m.ce||0) - (a.m.ce||0));
+    const past = order.filter(o=>!o.nx && !o.running).sort((a,b)=>(b.m.ce||0) - (a.m.ce||0));
     el("bands").innerHTML = live.map(render).join("");
     el("past").innerHTML  = past.map(render).join("");
     el("past-h").style.display = past.length ? "" : "none";
@@ -354,7 +386,7 @@ function run(cfg){
 
   function tick(){
     const now = Date.now();
-    const sig = ALL.map(d=>d.at>now?1:0).join("");
+    const sig = ALL.map(t=>t>now?1:0).join("");
     if (sig !== tick.s){ tick.s = sig; paint(now); }
     document.querySelectorAll(".dl-clock[data-at]").forEach(n=>{
       const ms = Number(n.dataset.at) - now;

@@ -155,6 +155,18 @@ where they are known well before the CFP, so it keeps them.
 When the real call for papers appears, drop `estimated`, `estimatedFrom` and `watch`,
 and replace the single estimated deadline with the published schedule.
 
+#### How close the estimates have run
+
+Measured against the three venues here whose next cycle has since been published,
+shifting last cycle forward a year landed **1 day, 6 days and 20 days** from the real
+date — and in the two larger cases the real deadline came *later* than the estimate, so
+the error ran in the safe direction. A few weeks is the right expectation.
+
+Arithmetic cannot follow everything. HPCA 2027 sits seven weeks later in the calendar
+than HPCA 2026 while its submission deadline barely moved, and DATE compressed its
+notification-to-camera-ready gap from about nine weeks to three. This is why the page
+labels an estimate instead of printing it as a date.
+
 ### Past cycles
 
 An edition whose deadlines have all elapsed moves into the **Past cycles** section at
@@ -176,8 +188,10 @@ when its last deadline passes.
 No venue publishes an opening clock time, so the counter runs to the **start** of the
 opening day and stops at the **end** of the last day, both in UTC. Neither boundary is
 precise to the hour in any particular city, and the note under the counter says so
-rather than implying otherwise. Keeping one finished cycle per venue is what makes the estimates
-meaningful, and lets you eyeball how a venue's timing moves year to year.
+rather than implying otherwise.
+
+Keeping one finished cycle per venue is what makes the estimates meaningful, and lets
+you see how a venue's timing moves year to year.
 
 ## Local preview
 

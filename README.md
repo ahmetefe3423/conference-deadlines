@@ -1,10 +1,40 @@
 # Conference Deadlines
 
-Countdowns to research-track paper deadlines across computer architecture and EDA
-conferences: ICCAD, ASPLOS, MICRO, DATE, HPCA — plus DAC, ISCA and the 2027 cycles
-that have not published dates yet.
+**[ahmetefe3423.github.io/conference-deadlines](https://ahmetefe3423.github.io/conference-deadlines/)**
 
-**Live:** https://ahmetefe3423.github.io/conference-deadlines/
+[![Check deadlines](https://github.com/ahmetefe3423/conference-deadlines/actions/workflows/check-deadlines.yml/badge.svg)](https://github.com/ahmetefe3423/conference-deadlines/actions/workflows/check-deadlines.yml)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+
+Live countdowns to research-track paper deadlines across computer architecture and EDA
+conferences — ICCAD, ASPLOS, MICRO, DATE, HPCA, DAC and ISCA — with the cycles that have
+not published dates yet shown as clearly-labelled estimates rather than quietly omitted.
+
+One static page, no build step, no dependencies. Every date is read from the venue's own
+call for papers by hand, and a weekly job checks whether any of them has moved.
+
+| | |
+|---|---|
+| [`index.html`](index.html) | The whole page: markup, styling and the countdown engine |
+| [`data.json`](data.json) | Every deadline. The only file you edit to change a date |
+| [`tools/check_deadlines.py`](tools/check_deadlines.py) | Weekly drift check against the live CFP pages |
+| [`.claude/commands/update-deadlines.md`](.claude/commands/update-deadlines.md) | The agent prompt that re-verifies dates |
+| [`icons/`](icons/), [`site.webmanifest`](site.webmanifest) | Name and icon when the page is installed as an app |
+
+**Contents** · [Disclaimer](#disclaimer) · [Editing](#editing) ·
+[Local preview](#local-preview) · [Automatic checking](#checking-the-dates-automatically) ·
+[Installing as an app](#installing-it-as-an-app) · [License](#license)
+
+## Disclaimer
+
+**Unofficial, and no guarantee.** This is one person's page, not a service. Every date
+was copied by hand from the venue's own call for papers or its HotCRP instance, and
+then re-checked against the same source — but venues move deadlines, sometimes without
+announcing it, and a date here can be stale or simply wrong. **The call for papers is
+the authority.** Check it before you rely on anything here. The page is provided as is,
+without warranty of any kind; missing a deadline is your risk, not the author's.
+
+If you find a wrong date, please open an issue — that is the fastest way to fix it for
+everyone.
 
 ## Editing
 
@@ -108,23 +138,26 @@ and replace the single estimated deadline with the published schedule.
 
 ### Past cycles
 
-**The conference itself is the last event of a cycle, not the camera-ready date.**
-When every deadline has elapsed the countdown switches to the meeting — the label reads
-`Conference begins`, and while it is running the edition says `Under way` and sorts
-above everything still ahead of it. Only when the last day ends does the edition move
-into the **Past cycles** section at the foot of the page, newest first. Nothing marks
-it as past — the page works it out.
+An edition whose deadlines have all elapsed moves into the **Past cycles** section at
+the foot of the page. Nothing marks it as past — the page works it out.
 
-This is what `conferenceDates` is for beyond display. Without it, an edition whose
-submission and camera-ready dates are behind it would read as finished while the
-conference was still six weeks away, which is how ICCAD 2026 and MICRO 2026 both
-looked. An entry with `"conferenceDates": null` has no such event, so it closes when
-its last deadline passes.
+**A closed cycle keeps counting if its conference has not happened yet.** Submissions
+being over does not mean there is nothing left to wait for, so those editions lead the
+section with a live counter to the meeting itself, showing the date range and the city
+on the left. The label reads `Conference`; once the first day arrives it becomes
+`Under way`; once the last day ends the counter switches off and the edition joins the
+genuinely finished ones, most recently ended first. They are the only entries in the
+section that are not dimmed.
+
+This is what `conferenceDates` buys beyond display. Without it, ICCAD 2026 and MICRO
+2026 both read as finished business while their conferences were still six weeks out.
+An entry with `"conferenceDates": null` has no meeting to track, so it simply closes
+when its last deadline passes.
 
 No venue publishes an opening clock time, so the counter runs to the **start** of the
-opening day and the cycle closes at the **end** of the last day, both in UTC. Neither
-boundary is precise to the hour in any particular city; the note under the counter says
-so rather than implying otherwise. Keeping one finished cycle per venue is what makes the estimates
+opening day and stops at the **end** of the last day, both in UTC. Neither boundary is
+precise to the hour in any particular city, and the note under the counter says so
+rather than implying otherwise. Keeping one finished cycle per venue is what makes the estimates
 meaningful, and lets you eyeball how a venue's timing moves year to year.
 
 ## Local preview
@@ -211,3 +244,27 @@ independently re-checked against the same source. Aggregator sites are deliberat
 used: at time of writing at least one was publishing ISCA 2027 dates that were simply
 ISCA 2026 shifted forward a year, including a phantom "second round" that was really
 the Industry Track.
+
+## Installing it as an app
+
+`site.webmanifest` and `icons/` give the page a name and an icon when it is installed
+from the browser. Without them a shortcut inherits the browser's own icon, which is
+what it looks like before the manifest exists.
+
+The icon is `icons/icon.svg`, a countdown dial on a rule line — the page's own motif,
+reduced to three shapes so it still reads at 16px. The PNGs are rendered from it:
+
+```
+inkscape icons/icon.svg -w 512 -h 512 -o icons/icon-512.png
+```
+
+`icons/icon-maskable.svg` is the same drawing pulled into the central safe zone, for
+Android, which crops an app icon to a circle.
+
+**If you installed the app before this existed,** the old icon is cached with the
+installed shortcut. Remove it and install again to pick up the new one.
+
+## License
+
+[MIT](LICENSE) © 2026 Ahmet Efe. The code and the page are yours to reuse; the dates
+themselves are facts and belong to nobody. Attribution is welcome, not required.

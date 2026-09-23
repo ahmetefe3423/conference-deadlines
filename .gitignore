@@ -1,0 +1,8 @@
+# Nothing here is built, so anything untracked is an accident.
+.DS_Store
+Thumbs.db
+*.swp
+*~
+__pycache__/
+*.pyc
+report.txt

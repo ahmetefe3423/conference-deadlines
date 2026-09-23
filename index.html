@@ -5,6 +5,15 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Conference Deadlines</title>
 <meta name="description" content="Countdowns to research-track paper deadlines across computer architecture and EDA conferences.">
+<link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+<link rel="icon" href="icons/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<!-- Installed as an app, the window takes its name and icon from here. Without
+     a manifest the browser falls back to its own icon, which is why a shortcut
+     made before this existed looked like the browser rather than the page. -->
+<link rel="manifest" href="site.webmanifest">
+<meta name="theme-color" content="#F4F6F8" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0C1116" media="(prefers-color-scheme: dark)">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
@@ -69,6 +78,7 @@ body{margin:0;background:var(--ground);color:var(--ink);
   margin-top:3px;letter-spacing:-.01em;}
 .dl-clock{font-size:15px;font-weight:600;font-variant-numeric:tabular-nums;
   margin-top:9px;letter-spacing:-.01em;white-space:nowrap;}
+.dl-clock.now{color:var(--crit);}
 .dl-note{font-size:9.5px;color:var(--ink-3);margin-top:4px;letter-spacing:.04em;}
 
 .hub{position:relative;display:flex;flex-direction:column;align-items:center;}
@@ -149,15 +159,24 @@ h2{font-family:Archivo,system-ui,sans-serif;font-weight:600;font-size:10.5px;let
   <div id="past"></div>
 
   <footer class="foot">
+    <b>Unofficial, and no guarantee.</b> This is one person's page, not a service. Every date
+    here was copied by hand from the venue's own call for papers, but venues move deadlines —
+    sometimes without announcing it — so a date here can be stale or simply wrong. The call for
+    papers is the authority: check it before you rely on anything on this page. Provided as is,
+    without warranty of any kind. Missing a deadline is your risk, not the author's.
+    <br><br>
     Main-conference research tracks only. Every date read from the venue's own call for papers or
     HotCRP, then re-checked against the same source. Timezones are per-date — MICRO publishes EDT,
     not AoE. Where a venue publishes no clock time the counter runs to end of day and says so;
-    it is never invented. The conference itself is the last event of a cycle, so an edition
-    keeps counting down after its final deadline; once the meeting ends the cycle sorts to
-    the bottom. The countdown is timezone-independent —
+    it is never invented. A cycle drops to the bottom once its deadlines have passed, but if
+    its conference has not happened yet it keeps a counter running down there — submissions
+    closing is not the same as nothing being left to wait for. The countdown is timezone-independent —
     a duration is the same everywhere, so the selector only changes which calendar date is printed.
     All deadlines live in
     <a href="https://github.com/ahmetefe3423/conference-deadlines/blob/main/data.json">data.json</a>.
+    Source and dates are
+    <a href="https://github.com/ahmetefe3423/conference-deadlines/blob/main/LICENSE">MIT-licensed</a>
+    — reuse them freely.
     <br><br>
     <b>On the estimates.</b> A dashed circle means the call for papers is not out and the
     countdown is that venue's last cycle shifted a year. Tested against the three venues here
@@ -305,42 +324,55 @@ function run(cfg){
                                    .concat(m.opens===null ? [] : [m.opens, m.closes]));
 
   function paint(now){
+    // A cycle is over when its last deadline passes - that is what the live
+    // list tracks. The conference itself comes later and is a separate state,
+    // so a finished cycle can still carry a running counter down in the past
+    // section rather than looking like nothing is left to wait for.
     const order = MODEL.map(m=>{
-      const nx = m.dl.find(d=>d.at>now)
-              || (m.opens !== null && m.opens > now
-                    ? {label:"Conference begins", date:m.conferenceDates[0],
-                       timezone:null, at:m.opens, isConf:true}
-                    : null);
-      // Deadlines done, opening day reached, last day not yet over.
-      return {m, nx, running: !nx && m.closes !== null && m.closes > now};
+      const nx = m.dl.find(d=>d.at>now) || null;
+      const conf = m.opens === null ? "none"
+                 : m.opens  > now   ? "ahead"
+                 : m.closes > now   ? "running"
+                 :                    "over";
+      return {m, nx, conf};
     });
-    // A conference happening right now outranks everything still ahead of it.
-    const rank = o => o.running ? -1 : (o.nx ? o.nx.at : Infinity);
-    order.sort((a,b)=>rank(a)-rank(b));
 
-    const render = ({m,nx,running}) => {
-      const left = running
-        ? '<div class="dl-kind" style="color:var(--crit)">Under way</div>'
-          + '<div class="dl-date">'+fmt("UTC",LONG).format(m.cs)+'</div>'
-          + '<div class="dl-note">the conference is running now, through '
-          +   fmt("UTC",SHORT).format(m.ce) + '</div>'
-        : nx
+    const render = ({m,nx,conf}) => {
+      const waiting = conf === "ahead" || conf === "running";
+      const range = m.cs === null ? ""
+                  : fmt("UTC",SHORT).format(m.cs) + ' \u2013 ' + fmt("UTC",SHORT).format(m.ce);
+      const left = nx
         ? '<div class="dl-kind" data-sev="'+nx.at+'">'
           +   (m.estimated ? "Estimated" : esc(nx.label)) + '</div>'
           + '<div class="dl-date">'+showLong(nx)+'</div>'
           + '<div class="dl-clock" data-at="'+nx.at+'"></div>'
           + '<div class="dl-note">'
           +   (m.estimated ? 'not announced \u00b7 based on ' + esc(m.estimatedFrom)
-                : nx.isConf ? 'every deadline passed \u00b7 no opening time published, '
-                              + 'counting to the opening day'
-                            : showNote(nx))
+                           : showNote(nx))
           + '</div>'
+
+        // Submissions are done but the meeting is not. The counter changes what
+        // it points at rather than switching off, because "nothing left to wait
+        // for" is wrong while the conference is still weeks out.
+        : conf === "ahead"
+        ? '<div class="dl-kind" data-sev="'+m.opens+'">Conference</div>'
+          + '<div class="dl-date">'+range+'</div>'
+          + '<div class="dl-clock" data-at="'+m.opens+'"></div>'
+          + '<div class="dl-note">'+esc(m.venue)
+          +   ' \u00b7 submissions closed \u00b7 no opening time published, '
+          +   'counting to the opening day</div>'
+
+        : conf === "running"
+        ? '<div class="dl-kind" style="color:var(--crit)">Under way</div>'
+          + '<div class="dl-date">'+range+'</div>'
+          + '<div class="dl-clock now">in progress</div>'
+          + '<div class="dl-note">'+esc(m.venue)+' \u00b7 running now, through '
+          +   fmt("UTC",SHORT).format(m.ce) + '</div>'
+
         // A finished cycle anchors on its FIRST deadline, not its last. The
         // closing camera-ready date carries no information you would compare
         // year to year; the submission deadline is the whole point of keeping
         // the cycle on the page.
-        // Reaching here means the conference itself is over too - while it is
-        // still ahead, the cycle counts down to it rather than closing.
         : '<div class="dl-kind" style="color:var(--ink-3)">'+esc(m.dl[0].label)+'</div>'
           + '<div class="dl-date">'+showLong(m.dl[0])+'</div>'
           + '<div class="dl-note">cycle closed'
@@ -361,7 +393,7 @@ function run(cfg){
           + 'cycle shifted a year \u2014 a planning aid, not a date.</div>'
         : '<dl class="sch">'+sch+'</dl>';
 
-      return '<section class="band'+((nx||running)?"":" closed")+(m.estimated?" est":"")+'">'
+      return '<section class="band'+((nx||waiting)?"":" closed")+(m.estimated?" est":"")+'">'
         + '<div class="left">'+left+'</div>'
         + '<div class="hub"><div class="disc">'
         +   '<span class="nm">'+esc(m.name)+'</span><span class="yr">'+esc(m.year)+'</span>'
@@ -374,10 +406,15 @@ function run(cfg){
         + '<div class="right">'+rightCol+'</div></section>';
     };
 
-    const live = order.filter(o=>o.nx || o.running);
-    // Most recently finished first, so the newest closed cycle sits at the top
-    // of the past list rather than the bottom.
-    const past = order.filter(o=>!o.nx && !o.running).sort((a,b)=>(b.m.ce||0) - (a.m.ce||0));
+    const live = order.filter(o=>o.nx).sort((a,b)=>a.nx.at - b.nx.at);
+    // Cycles still waiting on their conference lead the section, soonest
+    // meeting first - they are the only ones down here still counting. The
+    // genuinely finished follow, most recently ended first.
+    const past = order.filter(o=>!o.nx).sort((a,b)=>{
+      const wait = o => o.conf === "ahead" || o.conf === "running";
+      if (wait(a) !== wait(b)) return wait(a) ? -1 : 1;
+      return wait(a) ? a.m.cs - b.m.cs : (b.m.ce||0) - (a.m.ce||0);
+    });
     el("bands").innerHTML = live.map(render).join("");
     el("past").innerHTML  = past.map(render).join("");
     el("past-h").style.display = past.length ? "" : "none";

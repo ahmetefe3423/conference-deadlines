@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img"
+     aria-label="A countdown dial resting on a rule line">
+  <!-- The page's own motif: a disc sitting on a rule that runs off both sides,
+       drawn as a dial - accent for the time still to run, muted for the part
+       already spent. Three shapes and no text, so it survives 16 pixels. -->
+  <rect width="512" height="512" rx="114" fill="#0C1116"/>
+  <path d="M40 256h78M394 256h78" stroke="#3A4854" stroke-width="12"/>
+  <circle cx="256" cy="256" r="138" fill="#151C23"/>
+  <circle cx="256" cy="256" r="138" fill="none" stroke="#2E3B47" stroke-width="34"/>
+  <path d="M256 118 A138 138 0 1 1 118.9 273" fill="none" stroke="#4FC4B0"
+        stroke-width="34" stroke-linecap="round"/>
+</svg>

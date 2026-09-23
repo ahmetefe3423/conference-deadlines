@@ -247,22 +247,20 @@ the Industry Track.
 
 ## Installing it as an app
 
-`site.webmanifest` and `icons/` give the page a name and an icon when it is installed
-from the browser. Without them a shortcut inherits the browser's own icon, which is
-what it looks like before the manifest exists.
+Chrome's **Install page as app** does the rest by itself — `site.webmanifest` and
+`icons/` are only there so it has a name and an icon to use. Without a manifest the
+shortcut inherits the browser's own icon, which is what it looked like before these
+files existed. Nothing needs building or running.
 
-The icon is `icons/icon.svg`, a countdown dial on a rule line — the page's own motif,
-reduced to three shapes so it still reads at 16px. The PNGs are rendered from it:
+The icon is a countdown dial resting on a rule line, the page's own motif reduced to
+three shapes so it still reads at 16px. `icons/icon.svg` is the drawing; the PNGs beside
+it are that same drawing at the sizes Chrome and Android insist on, and
+`icons/icon-maskable.svg` is it pulled into the middle for Android, which crops an app
+icon to a circle. They are committed, so editing the SVG is the only step that needs a
+person — regenerate the PNGs from it with whatever tool you have to hand.
 
-```
-inkscape icons/icon.svg -w 512 -h 512 -o icons/icon-512.png
-```
-
-`icons/icon-maskable.svg` is the same drawing pulled into the central safe zone, for
-Android, which crops an app icon to a circle.
-
-**If you installed the app before this existed,** the old icon is cached with the
-installed shortcut. Remove it and install again to pick up the new one.
+**If you installed the app before these files existed,** the old icon is cached with the
+shortcut. Remove it and install again to pick up the new one.
 
 ## License
 

@@ -110,9 +110,11 @@ body{margin:0;background:var(--ground);color:var(--ink);
 .sch .n dt,.sch .n dd{color:var(--ink);font-weight:600;}
 .ln{display:contents;}
 
-h2{font-family:Archivo,system-ui,sans-serif;font-weight:600;font-size:10.5px;letter-spacing:.14em;
-  text-transform:uppercase;color:var(--ink-2);margin:34px 0 0;padding-bottom:6px;
-  border-bottom:1px solid var(--hub-line);}
+h2{font-family:Archivo,system-ui,sans-serif;font-weight:700;font-size:14px;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--ink);margin:62px 0 0;padding-bottom:8px;
+  border-bottom:2px solid var(--ink-3);}
+.sect-note{font-size:10.5px;color:var(--ink-3);margin:10px 0 2px;letter-spacing:.04em;
+  line-height:1.6;}
 .tba{margin-top:10px;}
 .tba .r{display:grid;grid-template-columns:104px 1fr;gap:14px;padding:7px 0;font-size:11.5px;}
 .tba .r+.r{border-top:1px solid var(--rule);}
@@ -156,6 +158,7 @@ h2{font-family:Archivo,system-ui,sans-serif;font-weight:600;font-size:10.5px;let
   <div id="bands"></div>
 
   <h2 id="past-h">Past cycles</h2>
+  <p id="past-note" class="sect-note"></p>
   <div id="past"></div>
 
   <footer class="foot">
@@ -418,6 +421,13 @@ function run(cfg){
     el("bands").innerHTML = live.map(render).join("");
     el("past").innerHTML  = past.map(render).join("");
     el("past-h").style.display = past.length ? "" : "none";
+
+    const note = el("past-note");
+    note.style.display = past.length ? "" : "none";
+    note.textContent = past.some(o=>o.conf==="ahead"||o.conf==="running")
+      ? "Submissions have closed for every cycle below. Where a counter is still "
+        + "running it counts to the conference itself, not to a deadline."
+      : "Finished cycles, kept so you can see how a venue's timing moves year to year.";
 
   }
 

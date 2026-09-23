@@ -10,11 +10,16 @@
     "CEST": 2,
     "JST": 9
   },
+  "fields": {
+    "architecture": "Computer architecture",
+    "eda": "Electronic design automation"
+  },
   "conferences": [
     {
       "name": "ICCAD",
       "year": "2026",
       "cycle": "",
+      "field": "eda",
       "venue": "San Jose",
       "conferenceDates": [
         "2026-11-08",
@@ -58,6 +63,7 @@
       "name": "ASPLOS",
       "year": "2027",
       "cycle": "Fall cycle",
+      "field": "architecture",
       "venue": "Heraklion, Crete",
       "conferenceDates": [
         "2027-04-11",
@@ -91,6 +97,7 @@
       "name": "DATE",
       "year": "2027",
       "cycle": "",
+      "field": "eda",
       "venue": "Dresden",
       "conferenceDates": [
         "2027-03-22",
@@ -124,6 +131,7 @@
       "name": "HPCA",
       "year": "2027",
       "cycle": "",
+      "field": "architecture",
       "venue": "Salt Lake City",
       "conferenceDates": [
         "2027-03-20",
@@ -162,6 +170,7 @@
       "name": "DAC",
       "year": "2027",
       "cycle": "",
+      "field": "eda",
       "venue": "San Jose",
       "conferenceDates": [
         "2027-07-11",
@@ -191,6 +200,7 @@
       "name": "ISCA",
       "year": "2027",
       "cycle": "",
+      "field": "architecture",
       "estimated": true,
       "estimatedFrom": "ISCA 2026 abstract deadline, 10 Nov 2025",
       "watch": "https://iscaconf.org/isca2027/",
@@ -209,6 +219,7 @@
       "name": "MICRO",
       "year": "2027",
       "cycle": "",
+      "field": "architecture",
       "estimated": true,
       "estimatedFrom": "MICRO 2026 abstract deadline, 31 Mar 2026",
       "watch": "https://www.microarch.org/micro60/",
@@ -227,6 +238,7 @@
       "name": "ICCAD",
       "year": "2027",
       "cycle": "",
+      "field": "eda",
       "estimated": true,
       "estimatedFrom": "ICCAD 2026 abstract deadline, 7 Apr 2026",
       "watch": "https://iccad.com/2027",
@@ -245,6 +257,7 @@
       "name": "ASPLOS",
       "year": "2027",
       "cycle": "Spring cycle",
+      "field": "architecture",
       "venue": "Heraklion, Crete",
       "conferenceDates": [
         "2027-04-11",
@@ -278,6 +291,7 @@
       "name": "MICRO",
       "year": "2026",
       "cycle": "",
+      "field": "architecture",
       "venue": "Athens",
       "conferenceDates": [
         "2026-10-31",
@@ -316,6 +330,7 @@
       "name": "DAC",
       "year": "2026",
       "cycle": "",
+      "field": "eda",
       "venue": "Long Beach",
       "conferenceDates": [
         "2026-07-26",
@@ -351,6 +366,7 @@
       "name": "ISCA",
       "year": "2026",
       "cycle": "",
+      "field": "architecture",
       "venue": "Raleigh",
       "conferenceDates": [
         "2026-06-27",
@@ -395,6 +411,7 @@
       "name": "DATE",
       "year": "2026",
       "cycle": "",
+      "field": "eda",
       "venue": "Verona",
       "conferenceDates": [
         "2026-04-20",
@@ -428,6 +445,7 @@
       "name": "HPCA",
       "year": "2026",
       "cycle": "",
+      "field": "architecture",
       "venue": "Sydney",
       "conferenceDates": [
         "2026-01-31",

@@ -5,9 +5,10 @@
 [![Check deadlines](https://github.com/ahmetefe3423/conference-deadlines/actions/workflows/check-deadlines.yml/badge.svg)](https://github.com/ahmetefe3423/conference-deadlines/actions/workflows/check-deadlines.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-Live countdowns to research-track paper deadlines across computer architecture and EDA
-conferences — ICCAD, ASPLOS, MICRO, DATE, HPCA, DAC and ISCA — with the cycles that have
-not published dates yet shown as clearly-labelled estimates rather than quietly omitted.
+Live countdowns to research-track paper deadlines across computer architecture and
+electronic design automation — ICCAD, ASPLOS, MICRO, DATE, HPCA, DAC and ISCA — filterable
+by research field, with the cycles that have not published dates yet shown as
+clearly-labelled estimates rather than quietly omitted.
 
 One static page, no build step, no dependencies. Every date is read from the venue's own
 call for papers by hand, and a weekly job checks whether any of them has moved.
@@ -67,6 +68,7 @@ rendering a wrong date.
 | `name` | Short name shown inside the circle, e.g. `"DATE"` |
 | `year` | Shown under the name |
 | `cycle` | Label for venues running more than one round into the same conference (ASPLOS Spring / Fall). Use `""` for a single round. |
+| `field` | A key from the `fields` map. Drives the filter buttons: see [Research fields](#research-fields). |
 | `venue` | City, shown under the circle |
 | `conferenceDates` | `["YYYY-MM-DD", "YYYY-MM-DD"]` — start and end. Also the cycle's last event: see [Past cycles](#past-cycles). |
 | `callForPapers` | URL of the official CFP |
@@ -80,6 +82,23 @@ Each deadline:
 | `date` | The date **exactly as the venue publishes it**, `YYYY-MM-DD` |
 | `timezone` | A name from the `timezones` map, or `null` when the venue publishes no clock time at all |
 | `time` | *Optional.* `"HH:MM"`, 24-hour. Defaults to `"23:59"`. |
+
+### Research fields
+
+`fields` at the top of `data.json` maps a key to the name shown on its filter button:
+
+```json
+"fields": {
+  "architecture": "Computer architecture",
+  "eda": "Electronic design automation"
+}
+```
+
+Each conference then names one of those keys in its `field`. The page builds the filter
+bar from the map, counts the entries in each, and remembers the reader's choice — so
+adding a research area is a change to `data.json` alone, exactly like adding a timezone.
+An entry whose `field` is not in the map is reported as a config error rather than
+silently dropped from every filter.
 
 ### Timezones
 

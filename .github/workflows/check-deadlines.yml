@@ -26,10 +26,13 @@ jobs:
           import json, re, sys
           cfg = json.load(open("data.json"))
           tz, bad = cfg["timezones"], []
+          fields = cfg.get("fields", {})
           for c in cfg["conferences"]:
               who = f"{c.get('name','?')} {c.get('year','')}"
               for k in ("name","year","venue","conferenceDates","callForPapers","deadlines"):
                   if k not in c: bad.append(f"{who}: missing {k}")
+              if "field" in c and c["field"] not in fields:
+                  bad.append(f"{who}: unknown field {c['field']!r}")
               for d in c.get("deadlines", []):
                   w = f"{who} / {d.get('label','?')}"
                   if not re.fullmatch(r"\d{4}-\d{2}-\d{2}", d.get("date","")):

@@ -51,13 +51,25 @@ body{margin:0;background:var(--ground);color:var(--ink);
 
 .mast{display:flex;align-items:baseline;justify-content:space-between;gap:14px;flex-wrap:wrap;
   padding-bottom:10px;border-bottom:2px solid var(--ink);}
-.mast h1{font-family:Archivo,system-ui,sans-serif;font-weight:700;font-size:23px;
-  letter-spacing:-.02em;margin:0;line-height:1;}
+.mast h1{font-family:Archivo,system-ui,sans-serif;font-weight:700;font-size:34px;
+  letter-spacing:-.025em;margin:0;line-height:1;}
 .mast .stamp{font-size:10.5px;color:var(--ink-3);letter-spacing:.03em;text-align:right;line-height:1.9;}
 .tzc{font-size:9.5px;letter-spacing:.1em;}
 .tzc select{font-family:inherit;font-size:10px;margin-left:6px;padding:2px 4px;
   background:var(--surface);color:var(--ink);border:1px solid var(--hub-line);border-radius:0;}
 .tzc select:focus-visible{outline:2px solid var(--accent);outline-offset:1px;}
+
+.lede{font-size:11px;color:var(--ink-3);margin:13px 0 0;max-width:74ch;line-height:1.7;}
+.lede b{color:var(--ink-2);font-weight:600;}
+
+.filters{display:flex;gap:6px;flex-wrap:wrap;margin:15px 0 0;}
+.fbtn{font-family:inherit;font-size:10.5px;letter-spacing:.09em;text-transform:uppercase;
+  font-weight:600;color:var(--ink-2);background:var(--surface);cursor:pointer;
+  border:1px solid var(--hub-line);padding:6px 11px;}
+.fbtn:hover{color:var(--ink);border-color:var(--ink-3);}
+.fbtn[aria-pressed="true"]{background:var(--ink);color:var(--ground);border-color:var(--ink);}
+.fbtn .n{margin-left:7px;font-weight:400;opacity:.65;}
+.fbtn:focus-visible{outline:2px solid var(--accent);outline-offset:1px;}
 
 /* config problem panel */
 .err{margin-top:18px;border:1.5px solid var(--crit);background:var(--crit-soft);padding:14px 16px;}
@@ -110,9 +122,8 @@ body{margin:0;background:var(--ground);color:var(--ink);
 .sch .n dt,.sch .n dd{color:var(--ink);font-weight:600;}
 .ln{display:contents;}
 
-h2{font-family:Archivo,system-ui,sans-serif;font-weight:700;font-size:14px;letter-spacing:.12em;
-  text-transform:uppercase;color:var(--ink);margin:62px 0 0;padding-bottom:8px;
-  border-bottom:2px solid var(--ink-3);}
+h2{font-family:Archivo,system-ui,sans-serif;font-weight:700;font-size:21px;letter-spacing:-.01em;
+  color:var(--ink);margin:64px 0 0;padding-bottom:9px;border-bottom:2px solid var(--ink);}
 .sect-note{font-size:10.5px;color:var(--ink-3);margin:10px 0 2px;letter-spacing:.04em;
   line-height:1.6;}
 .tba{margin-top:10px;}
@@ -130,6 +141,8 @@ h2{font-family:Archivo,system-ui,sans-serif;font-weight:700;font-size:14px;lette
 .foot a{color:var(--accent);}
 
 @media (max-width:760px){
+  .mast h1{font-size:26px;}
+  h2{font-size:18px;}
   .band{grid-template-columns:1fr;justify-items:center;gap:16px;padding:26px 0;}
   .left{text-align:center;padding:0;order:2;}
   .hub{order:1;} .hub::before,.hub::after{display:none;}
@@ -153,6 +166,12 @@ h2{font-family:Archivo,system-ui,sans-serif;font-weight:700;font-size:14px;lette
         </select>
       </label></div>
   </header>
+
+  <p class="lede"><b>Unofficial.</b> Every date here was copied by hand from the venue's own
+  call for papers and can be stale or simply wrong — check the call for papers before you
+  rely on one.</p>
+
+  <nav class="filters" id="filters" aria-label="Filter by field"></nav>
 
   <div id="err"></div>
   <div id="bands"></div>
@@ -226,6 +245,9 @@ function validate(cfg){
   if (!cfg || typeof cfg !== "object") return ["data.json must contain a JSON object."];
   const tz = cfg.timezones;
   if (!tz || typeof tz !== "object") e.push("Missing <code>timezones</code> object.");
+  const fl = cfg.fields;
+  if (fl !== undefined && (!fl || typeof fl !== "object"))
+    e.push("<code>fields</code> must be an object mapping a key to its display name.");
   if (!Array.isArray(cfg.conferences)) e.push("Missing <code>conferences</code> array.");
   (cfg.conferences || []).forEach((c,i)=>{
     const who = "Conference " + (i+1) + " (" + esc(c.name || "no name") + " " + esc(c.year || "") + ")";
@@ -235,6 +257,9 @@ function validate(cfg){
     if (c.conferenceDates !== null
         && (!Array.isArray(c.conferenceDates) || c.conferenceDates.length !== 2))
       e.push(who + ": <code>conferenceDates</code> must be a pair, [start, end], or null");
+    if (c.field !== undefined && fl && typeof fl === "object" && !(c.field in fl))
+      e.push(who + ": unknown field " + esc(JSON.stringify(c.field))
+                 + " — add it to <code>fields</code> in data.json");
     if (c.estimated && !c.estimatedFrom)
       e.push(who + ": an estimated entry needs <code>estimatedFrom</code> saying what it is based on");
     if (!Array.isArray(c.deadlines) || !c.deadlines.length){
@@ -265,6 +290,9 @@ function run(cfg){
   const ZONE = (()=>{ try{ return Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC"; }
                       catch(e){ return "UTC"; } })();
   let MODE = (()=>{ try{ return localStorage.getItem("cd-tz") || "pub"; }catch(e){ return "pub"; } })();
+  const FIELDS = (cfg.fields && typeof cfg.fields === "object") ? cfg.fields : {};
+  let FIELD = (()=>{ try{ return localStorage.getItem("cd-field") || "all"; }catch(e){ return "all"; } })();
+  if (FIELD !== "all" && !(FIELD in FIELDS)) FIELD = "all";   // a field that was removed
   const zoneOf = () => MODE === "loc" ? ZONE : "UTC";
 
   const timeOf = d => d.time || "23:59";
@@ -331,7 +359,7 @@ function run(cfg){
     // list tracks. The conference itself comes later and is a separate state,
     // so a finished cycle can still carry a running counter down in the past
     // section rather than looking like nothing is left to wait for.
-    const order = MODEL.map(m=>{
+    const order = MODEL.filter(m=>FIELD === "all" || m.field === FIELD).map(m=>{
       const nx = m.dl.find(d=>d.at>now) || null;
       const conf = m.opens === null ? "none"
                  : m.opens  > now   ? "ahead"
@@ -418,7 +446,9 @@ function run(cfg){
       if (wait(a) !== wait(b)) return wait(a) ? -1 : 1;
       return wait(a) ? a.m.cs - b.m.cs : (b.m.ce||0) - (a.m.ce||0);
     });
-    el("bands").innerHTML = live.map(render).join("");
+    el("bands").innerHTML = live.length
+      ? live.map(render).join("")
+      : '<p class="sect-note">No deadline ahead in this field. Everything below has closed.</p>';
     el("past").innerHTML  = past.map(render).join("");
     el("past-h").style.display = past.length ? "" : "none";
 
@@ -430,6 +460,27 @@ function run(cfg){
       : "Finished cycles, kept so you can see how a venue's timing moves year to year.";
 
   }
+
+  // Built from cfg.fields, so a new research area is a data change and not a
+  // code change - the same arrangement as the timezones map.
+  function buildFilters(){
+    const nav = el("filters");
+    const keys = Object.keys(FIELDS);
+    if (!keys.length){ nav.style.display = "none"; return; }
+    const count = f => MODEL.filter(m => f === "all" || m.field === f).length;
+    const btn = (f, label) =>
+      '<button type="button" class="fbtn" data-field="' + esc(f) + '" aria-pressed="'
+      + (FIELD === f) + '">' + esc(label) + '<span class="n">' + count(f) + '</span></button>';
+    nav.innerHTML = btn("all", "All") + keys.map(f => btn(f, FIELDS[f])).join("");
+    nav.querySelectorAll(".fbtn").forEach(b => b.addEventListener("click", ()=>{
+      FIELD = b.dataset.field;
+      try{ localStorage.setItem("cd-field", FIELD); }catch(e){}
+      nav.querySelectorAll(".fbtn").forEach(x =>
+        x.setAttribute("aria-pressed", String(x.dataset.field === FIELD)));
+      tick.s = null; tick();
+    }));
+  }
+  buildFilters();
 
   function tick(){
     const now = Date.now();

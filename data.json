@@ -179,6 +179,12 @@
       "callForPapers": "https://dac.com/2027/program/research-manuscript-submissions",
       "deadlines": [
         {
+          "label": "Abstract",
+          "date": "2026-11-11",
+          "timezone": "PST",
+          "time": "17:00"
+        },
+        {
           "label": "Full paper",
           "date": "2026-11-18",
           "timezone": "PST",

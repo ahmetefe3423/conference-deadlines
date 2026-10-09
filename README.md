@@ -157,15 +157,26 @@ and replace the single estimated deadline with the published schedule.
 
 #### How close the estimates have run
 
-Measured against the three venues here whose next cycle has since been published,
-shifting last cycle forward a year landed **1 day, 6 days and 20 days** from the real
-date — and in the two larger cases the real deadline came *later* than the estimate, so
-the error ran in the safe direction. A few weeks is the right expectation.
+Four venues in this file have now published the cycle that was once estimated here, so
+the rule can be scored against them. Taking the previous cycle's abstract deadline and
+adding a year:
 
-Arithmetic cannot follow everything. HPCA 2027 sits seven weeks later in the calendar
-than HPCA 2026 while its submission deadline barely moved, and DATE compressed its
-notification-to-camera-ready gap from about nine weeks to three. This is why the page
-labels an estimate instead of printing it as a date.
+| Venue | Estimate | Published | Off by |
+|---|---|---|---|
+| DAC 2027 | 11 Nov 2026 | 11 Nov 2026 | exact |
+| HPCA 2027 | 25 Jul 2026 | 24 Jul 2026 | 1 day earlier |
+| ISCA 2027 | 10 Nov 2026 | 9 Nov 2026 | 1 day earlier |
+| DATE 2027 | 7 Sep 2026 | 13 Sep 2026 | 6 days later |
+
+Submission deadlines are stickier than they look: a venue that ran its abstract deadline
+on the second Monday of November will likely do it again. A week is the right
+expectation, not a month.
+
+That stickiness does not extend to the rest of the schedule, which is why only the one
+estimated deadline goes on the page and the rest reads TBA. HPCA 2027 meets 48 days
+later in the calendar than HPCA 2026 while its abstract deadline moved by a single day,
+and DATE cut its notification-to-camera-ready gap from 9.6 weeks to 3.3. Neither is
+something arithmetic on last year's dates could have produced.
 
 ### Past cycles
 

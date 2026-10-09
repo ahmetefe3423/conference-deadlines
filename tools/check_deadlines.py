@@ -32,6 +32,7 @@ EXIT CODES
 
 import argparse
 import datetime as dt
+import html as html_entities
 import json
 import os
 import re
@@ -110,8 +111,16 @@ def fetch(url):
         return None, "", f"{type(e).__name__}: {e}"
 
 
-def text_of(html):
-    return expand_ranges(re.sub(r"\s+", " ", TAG.sub(" ", html)))
+def text_of(page):
+    """Tags out, entities decoded, whitespace flattened, ranges expanded.
+
+    Decoding matters as much as the range expansion it feeds. ISCA writes its
+    rebuttal window as "February 16&ndash;March 8, 2027"; left encoded, the dash
+    is the literal text "&ndash;", expand_ranges cannot see a range there, and
+    the opening date of every such window reads as missing from the page. That
+    is a false DRIFT on a date nobody touched.
+    """
+    return expand_ranges(re.sub(r"\s+", " ", html_entities.unescape(TAG.sub(" ", page))))
 
 
 def dates_in(text):

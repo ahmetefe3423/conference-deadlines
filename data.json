@@ -156,8 +156,8 @@
         },
         {
           "label": "Rebuttal closes",
-          "date": "2026-10-09",
-          "timezone": null
+          "date": "2026-10-11",
+          "timezone": "AoE"
         },
         {
           "label": "Decision",
@@ -207,17 +207,37 @@
       "year": "2027",
       "cycle": "",
       "field": "architecture",
-      "estimated": true,
-      "estimatedFrom": "ISCA 2026 abstract deadline, 10 Nov 2025",
-      "watch": "https://iscaconf.org/isca2027/",
-      "venue": "TBA",
-      "conferenceDates": null,
-      "callForPapers": "https://iscaconf.org/",
+      "venue": "Atlanta",
+      "conferenceDates": [
+        "2027-06-05",
+        "2027-06-09"
+      ],
+      "callForPapers": "https://iscaconf.org/isca2027/submit/callforpapers.php",
       "deadlines": [
         {
           "label": "Abstract",
-          "date": "2026-11-10",
+          "date": "2026-11-09",
           "timezone": "AoE"
+        },
+        {
+          "label": "Full paper",
+          "date": "2026-11-16",
+          "timezone": "AoE"
+        },
+        {
+          "label": "Rebuttal opens",
+          "date": "2027-02-16",
+          "timezone": null
+        },
+        {
+          "label": "Rebuttal closes",
+          "date": "2027-03-08",
+          "timezone": "AoE"
+        },
+        {
+          "label": "Decision",
+          "date": "2027-03-26",
+          "timezone": null
         }
       ]
     },
